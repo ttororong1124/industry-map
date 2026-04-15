@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우주산업 · 산업 탐사도</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { overflow-x:hidden; max-width:100%; }
+  img, svg { max-width:100%; }
+  body { font-family:'Noto Sans KR',sans-serif; background:linear-gradient(180deg,#08061a 0%,#0d0a28 30%,#100e32 60%,#0e0c2a 100%); min-height:100vh; color:#e8eaff; overflow-x:hidden; }
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 20%, rgba(120,80,220,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 20% 70%, rgba(60,100,240,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 40% at 50% 50%, rgba(80,40,180,0.08) 0%, transparent 60%);
+  }
+
+  /* ── 별 레이어 ── */
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .star{position:absolute;border-radius:50%;background:white;animation:twinkle ease-in-out infinite;}
+  .star:nth-child(1){width:2px;height:2px;left:5%;top:8%;animation-duration:3s;}
+  .star:nth-child(2){width:1px;height:1px;left:15%;top:20%;animation-duration:4s;animation-delay:1s;}
+  .star:nth-child(3){width:2px;height:2px;left:28%;top:12%;animation-duration:2.5s;animation-delay:0.5s;}
+  .star:nth-child(4){width:1px;height:1px;left:42%;top:5%;animation-duration:3.5s;animation-delay:2s;}
+  .star:nth-child(5){width:2px;height:2px;left:58%;top:15%;animation-duration:4s;animation-delay:0.8s;}
+  .star:nth-child(6){width:1px;height:1px;left:70%;top:8%;animation-duration:3s;animation-delay:1.5s;}
+  .star:nth-child(7){width:2px;height:2px;left:82%;top:18%;animation-duration:2.8s;animation-delay:0.3s;}
+  .star:nth-child(8){width:1px;height:1px;left:92%;top:10%;animation-duration:3.5s;animation-delay:1.2s;}
+  .star:nth-child(9){width:2px;height:2px;left:35%;top:30%;animation-duration:4.5s;animation-delay:2.5s;}
+  .star:nth-child(10){width:1px;height:1px;left:75%;top:35%;animation-duration:3.2s;animation-delay:0.7s;}
+  .star:nth-child(11){width:2px;height:2px;left:10%;top:45%;animation-duration:3.8s;animation-delay:1.8s;}
+  .star:nth-child(12){width:1px;height:1px;left:88%;top:50%;animation-duration:2.6s;animation-delay:1s;}
+  @keyframes twinkle{0%,100%{opacity:0.2;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+
+  /* ── 유성 ── */
+  .meteor{position:fixed;pointer-events:none;z-index:0;width:80px;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0.8),transparent);transform:rotate(-35deg);animation:shoot linear infinite;}
+  .meteor:nth-child(1){top:15%;left:60%;animation-duration:8s;animation-delay:2s;}
+  .meteor:nth-child(2){top:30%;left:80%;animation-duration:12s;animation-delay:6s;width:50px;}
+  @keyframes shoot{0%{transform:rotate(-35deg) translateX(0);opacity:1}100%{transform:rotate(-35deg) translateX(-400px);opacity:0}}
+
+  /* ── 우주선 마스코트 ── */
+  .mascot{position:fixed;top:55px;right:-10px;width:260px;opacity:0.13;pointer-events:none;z-index:0;animation:rocketFloat 8s ease-in-out infinite;}
+  @keyframes rocketFloat{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-16px) rotate(-5deg)}}
+
+  /* ── 상단 헤더 ── */
+  .wave-top{position:fixed;top:0;left:0;right:0;height:50px;pointer-events:none;z-index:1;overflow:hidden;}
+  .wave-top-inner{display:flex;width:200%;height:100%;animation:waveScroll 14s linear infinite;}
+  .wave-top-inner svg{width:50%;height:100%;flex-shrink:0;}
+  @keyframes waveScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  /* ── 레이아웃 ── */
+  .page{position:relative;z-index:1;padding:40px 24px 100px;max-width:960px;margin:0 auto;}
+
+  /* ── 네비 ── */
+  .topnav{display:flex;align-items:center;gap:12px;margin-bottom:40px;animation:fadeDown 0.6s ease both;}
+  .back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:#a0b0ff;text-decoration:none;background:rgba(80,60,180,0.2);border:1px solid rgba(120,100,220,0.35);padding:7px 16px;border-radius:20px;transition:background 0.2s;backdrop-filter:blur(6px);}
+  .back-btn:hover{background:rgba(100,80,200,0.35);}
+  .breadcrumb{font-size:13px;color:#7080c0;}
+  .breadcrumb span{color:#a090ff;font-weight:700;}
+
+  /* ── 히어로 ── */
+  .sector-hero{margin-bottom:40px;animation:fadeDown 0.7s 0.1s ease both;}
+  .sector-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#c0a0ff;margin-bottom:14px;background:rgba(120,80,220,0.12);border:1px solid rgba(120,80,220,0.3);padding:6px 16px;border-radius:20px;}
+  .sector-hero h1{font-size:clamp(30px,5vw,50px);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px;color:#f0f0ff;}
+  .sector-hero h1 em{font-style:normal;background:linear-gradient(90deg,#a080ff,#c0a0ff,#e0d0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .sector-hero p{font-size:15px;color:#8090c0;line-height:1.9;max-width:820px;}
+
+  /* ── 밸류체인 ── */
+  .valuechain-wrap{margin-bottom:28px;animation:fadeDown 0.7s 0.15s ease both;}
+  .vc-flow{display:flex;align-items:stretch;gap:0;}
+  .vc-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 10px 14px;background:rgba(80,60,160,0.18);border:1.5px solid rgba(120,100,220,0.3);border-radius:14px;cursor:pointer;transition:all 0.22s;position:relative;backdrop-filter:blur(6px);text-align:center;}
+  .vc-step:hover{background:rgba(100,80,200,0.3);border-color:rgba(160,130,255,0.55);transform:translateY(-3px);box-shadow:0 6px 20px rgba(120,80,220,0.2);}
+  .vc-step.active{background:rgba(120,90,220,0.32);border-color:#a080ff;box-shadow:0 4px 20px rgba(120,80,220,0.3);transform:translateY(-3px);}
+  .vc-step.active::after{content:'';position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #a080ff;z-index:2;}
+  .vc-icon{font-size:28px;line-height:1;}
+  .vc-title{font-size:15px;font-weight:800;color:#d0d8ff;line-height:1.3;}
+  .vc-step.active .vc-title{color:#e0d0ff;}
+  .vc-sub{font-size:12px;color:#7080b0;line-height:1.5;white-space:nowrap;}
+  .vc-arrow{display:flex;align-items:center;justify-content:center;width:28px;flex-shrink:0;font-size:18px;color:rgba(160,130,255,0.45);font-weight:900;position:relative;top:-3px;user-select:none;}
+
+  /* ── 섹션 카드 ── */
+  .section-display{margin-top:18px;animation:fadeUp 0.4s ease both;}
+  .section-card{background:rgba(20,16,50,0.7);border:1.5px solid #a080ff;border-radius:20px;padding:28px 30px 30px;backdrop-filter:blur(12px);box-shadow:0 6px 28px rgba(120,80,220,0.18),0 2px 8px rgba(0,0,30,0.3);display:none;}
+  .section-card.active{display:block;}
+  .sc-header{display:flex;align-items:flex-start;gap:18px;margin-bottom:20px;}
+  .sc-icon{font-size:38px;line-height:1;flex-shrink:0;margin-top:2px;}
+  .sc-info{flex:1;}
+  .sc-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9080d0;opacity:0.85;margin-bottom:5px;}
+  .sc-title{font-size:22px;font-weight:900;color:#e8e0ff;letter-spacing:-0.5px;margin-bottom:6px;}
+  .sc-desc{font-size:15px;color:#8090c0;line-height:1.85;}
+  .sc-desc strong{color:#c0d0ff;}
+
+  .wave-divider{width:100%;height:18px;overflow:hidden;margin:20px 0 22px;opacity:0.28;}
+  .wave-divider svg{width:200%;animation:wavescroll 7s linear infinite;}
+  @keyframes wavescroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  .industry-group{margin-bottom:22px;}
+  .ig-label{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .ig-dot{width:7px;height:7px;border-radius:50%;background:#a080ff;box-shadow:0 0 8px rgba(160,128,255,0.6);flex-shrink:0;}
+  .ig-title{font-size:11px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#8070c0;}
+  .ig-line{flex:1;height:1px;background:rgba(120,100,220,0.3);}
+
+  .co-tags{display:flex;flex-wrap:wrap;gap:8px;}
+  .co-tag{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:24px;font-size:14px;font-weight:700;text-decoration:none;transition:all 0.18s;}
+  .co-tag.linked{background:rgba(80,60,160,0.35);border:1.5px solid rgba(160,130,255,0.45);color:#d0d8ff;cursor:pointer;}
+  .co-tag.linked:hover{background:rgba(100,80,200,0.5);border-color:#a080ff;box-shadow:0 4px 14px rgba(120,80,220,0.25);transform:translateY(-1px);color:#e0d8ff;}
+  .co-tag.linked .co-tag-flag{font-size:13px;}
+  .co-tag.linked .co-tag-ticker{font-size:10px;font-weight:700;background:rgba(255,190,50,0.15);border:1px solid rgba(200,140,20,0.3);color:#d4a820;padding:1px 6px;border-radius:6px;letter-spacing:0.5px;}
+  .co-tag.naver{background:rgba(60,50,130,0.35);border:1.5px solid rgba(120,100,200,0.4);color:#b0c0f0;cursor:pointer;}
+  .co-tag.naver:hover{background:rgba(80,70,170,0.5);border-color:rgba(140,120,240,0.6);box-shadow:0 4px 14px rgba(100,80,200,0.2);transform:translateY(-1px);color:#d0d8ff;}
+  .co-tag.naver .co-tag-flag{font-size:13px;}
+  .co-tag.naver .co-tag-ext{font-size:10px;font-weight:700;background:rgba(100,80,200,0.2);border:1px solid rgba(120,100,220,0.35);color:#9090e0;padding:1px 6px;border-radius:6px;letter-spacing:0.5px;}
+  .co-tag.soon{background:rgba(50,40,100,0.3);border:1.5px dashed rgba(100,80,180,0.4);color:#6070a0;cursor:default;font-weight:500;font-size:13px;}
+
+  .page-footer{text-align:center;margin-top:56px;color:#5060a0;font-size:12px;line-height:1.9;}
+  .footer-emoji{font-size:22px;letter-spacing:8px;opacity:0.4;margin-bottom:8px;}
+
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+  .tip{position:relative;display:inline;border-bottom:1px dashed rgba(160,130,255,0.45);color:inherit;cursor:help;white-space:nowrap;}
+  .tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(8,6,25,0.95);border:1px solid rgba(120,90,220,0.4);border-radius:10px;padding:8px 12px;font-size:11px;line-height:1.7;color:rgba(200,200,255,0.9);white-space:normal;width:220px;pointer-events:none;opacity:0;transition:opacity 0.18s,transform 0.18s;transform:translateX(-50%) translateY(4px);z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.5);font-weight:400;letter-spacing:0;}
+  .tip:hover::after{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:640px) {
+    .page{padding:24px 16px 80px;}
+    .mascot{width:140px;opacity:0.1;}
+    .topnav{margin-bottom:24px;flex-wrap:wrap;gap:6px;}
+    .back-btn{font-size:12px;padding:6px 12px;}
+    .sector-hero h1{font-size:28px;}
+    .sector-hero p{font-size:13px;}
+    .vc-flow{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .vc-arrow{display:none;}
+    .vc-step{padding:14px 8px 12px;}
+    .vc-step.active::after{display:none;}
+    .vc-icon{font-size:22px;}
+    .vc-title{font-size:13px;}
+    .vc-sub{font-size:11px;white-space:normal;}
+    .section-card{padding:20px 16px 22px;border-radius:16px;}
+    .sc-title{font-size:18px;}
+    .sc-desc{font-size:14px;}
+    .co-tag{font-size:13px;padding:6px 11px;}
+    .co-tag.soon{font-size:12px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 별 -->
+<div class="stars">
+  <div class="star"></div><div class="star"></div><div class="star"></div>
+  <div class="star"></div><div class="star"></div><div class="star"></div>
+  <div class="star"></div><div class="star"></div><div class="star"></div>
+  <div class="star"></div><div class="star"></div><div class="star"></div>
+</div>
+
+<!-- 유성 -->
+<div class="meteor"></div><div class="meteor"></div>
+
+<!-- 상단 헤더 -->
+<div class="wave-top">
+  <div class="wave-top-inner">
+    <svg viewBox="0 0 1200 50" preserveAspectRatio="none" fill="none">
+      <path d="M0 30 C200 10 400 45 600 30 C800 15 1000 42 1200 30 L1200 0 L0 0Z" fill="rgba(120,80,220,0.18)"/>
+      <path d="M0 38 C150 22 300 48 450 38 C600 28 750 46 900 38 C1050 30 1200 44 1200 38 L1200 0 L0 0Z" fill="rgba(80,60,180,0.12)"/>
+    </svg>
+    <svg viewBox="0 0 1200 50" preserveAspectRatio="none" fill="none">
+      <path d="M0 30 C200 10 400 45 600 30 C800 15 1000 42 1200 30 L1200 0 L0 0Z" fill="rgba(120,80,220,0.18)"/>
+      <path d="M0 38 C150 22 300 48 450 38 C600 28 750 46 900 38 C1050 30 1200 44 1200 38 L1200 0 L0 0Z" fill="rgba(80,60,180,0.12)"/>
+    </svg>
+  </div>
+</div>
+
+<!-- 로켓 마스코트 -->
+<div class="mascot">
+  <svg viewBox="0 0 100 200" fill="none">
+    <!-- 불꽃 -->
+    <ellipse cx="50" cy="185" rx="10" ry="18" fill="rgba(255,150,30,0.7)"/>
+    <ellipse cx="50" cy="188" rx="6" ry="12" fill="rgba(255,220,60,0.8)"/>
+    <!-- 동체 -->
+    <path d="M35 160 L30 80 C30 40 50 10 50 10 C50 10 70 40 70 80 L65 160 Z" fill="#4060c0"/>
+    <path d="M38 155 L34 82 C34 48 50 20 50 20 C50 20 66 48 66 82 L62 155 Z" fill="#5070d0"/>
+    <!-- 창문 -->
+    <circle cx="50" cy="90" r="10" fill="#0a0818"/>
+    <circle cx="50" cy="90" r="7" fill="#1a1040"/>
+    <circle cx="47" cy="87" r="2" fill="rgba(150,200,255,0.4)"/>
+    <!-- 날개 -->
+    <path d="M30 140 L15 160 L30 155 Z" fill="#3050b0"/>
+    <path d="M70 140 L85 160 L70 155 Z" fill="#3050b0"/>
+    <!-- 하단 -->
+    <rect x="35" y="155" width="30" height="12" rx="3" fill="#3050b0"/>
+    <!-- 별 장식 -->
+    <text x="44" y="115" font-size="12" fill="#a0c0ff" opacity="0.8">✦</text>
+  </svg>
+</div>
+
+<div class="page">
+  <div class="topnav">
+    <a href="index.html" class="back-btn">← 홈으로</a>
+    <div class="breadcrumb">산업 탐사도 › <span>우주산업</span></div>
+  </div>
+
+  <div class="sector-hero">
+    <div class="sector-eyebrow">🚀 Space · 우주산업</div>
+    <h1>뉴 스페이스 시대의 개막<br><em>우주산업 섹터</em> 탐사</h1>
+    <p>발사체부터 위성, 지상장비, 서비스·데이터까지 — 민간이 주도하는 뉴스페이스 시대의 전체 밸류체인을 탐사합니다.</p>
+  </div>
+
+  <!-- 밸류체인 탭 -->
+  <div class="valuechain-wrap">
+    <div class="vc-flow">
+      <div class="vc-step active" id="tab-launch" onclick="showSection('launch',this)">
+        <div class="vc-icon">🚀</div>
+        <div class="vc-title">발사체</div>
+        <div class="vc-sub">로켓 · 엔진 · 발사 서비스</div>
+      </div>
+      <div class="vc-arrow">→</div>
+      <div class="vc-step" id="tab-satellite" onclick="showSection('satellite',this)">
+        <div class="vc-icon">🛰️</div>
+        <div class="vc-title">위성</div>
+        <div class="vc-sub">통신 · 지구관측 · 항법</div>
+      </div>
+      <div class="vc-arrow">→</div>
+      <div class="vc-step" id="tab-ground" onclick="showSection('ground',this)">
+        <div class="vc-icon">📡</div>
+        <div class="vc-title">지상장비</div>
+        <div class="vc-sub">안테나 · 관제 · 단말기</div>
+      </div>
+      <div class="vc-arrow">→</div>
+      <div class="vc-step" id="tab-service" onclick="showSection('service',this)">
+        <div class="vc-icon">🌐</div>
+        <div class="vc-title">서비스 · 데이터</div>
+        <div class="vc-sub">위성통신 · 위성영상 · PNT</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹션 카드 -->
+  <div class="section-display">
+
+    <!-- ① 발사체 -->
+    <div class="section-card active" id="sec-launch">
+      <div class="sc-header">
+        <div class="sc-icon">🚀</div>
+        <div class="sc-info">
+          <div class="sc-tag">Launch Vehicle · 발사체</div>
+          <div class="sc-title">로켓 · 엔진 · 발사 서비스</div>
+          <div class="sc-desc">
+            우주산업의 <strong>'관문을 여는 단계'</strong>입니다. 위성과 화물을 지구 중력을 벗어나 궤도에 올려놓는 발사체는 우주 접근의 핵심입니다.
+            SpaceX의 <strong>팰컨9 재사용 발사체</strong>가 발사 비용을 혁신적으로 낮추며 뉴스페이스 시대를 열었고, 한국도 <strong>누리호(KSLV-II)</strong>로 독자 발사 능력을 확보했습니다.
+            발사체는 로켓 엔진·추진제·구조체·전자장비 등 수만 개 부품의 정밀 조합으로, <strong>국내 방산·항공우주 기업들</strong>이 부품 공급망에 참여하고 있습니다.
+          </div>
+        </div>
+      </div>
+      <div class="wave-divider"><svg viewBox="0 0 800 18"><path d="M0 9 C100 0 200 18 300 9 C400 0 500 18 600 9 C700 0 800 18 800 9 L800 18 L0 18Z" fill="rgba(120,90,220,0.55)"/></svg></div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">국내 발사체 · 로켓 부품</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=047810" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>한국항공우주<span class="co-tag-ext">047810</span></a>
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=012450" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>한화에어로스페이스<span class="co-tag-ext">012450</span></a>
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=001440" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>태웅<span class="co-tag-ext">001440</span></a>
+          <span class="co-tag soon">+ 이노스페이스 · 페리지에어로스페이스(비상장) 추가 예정</span>
+        </div>
+      </div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">글로벌 발사 서비스</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <span class="co-tag soon">+ SpaceX · Rocket Lab · Arianespace 추가 예정</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 위성 -->
+    <div class="section-card" id="sec-satellite">
+      <div class="sc-header">
+        <div class="sc-icon">🛰️</div>
+        <div class="sc-info">
+          <div class="sc-tag">Satellite · 위성</div>
+          <div class="sc-title">통신 · 지구관측 · 항법 위성</div>
+          <div class="sc-desc">
+            우주에 올려 <strong>'정보를 수집하고 신호를 중계하는 단계'</strong>입니다. <strong>통신위성</strong>은 인터넷·방송 신호를 전달하고, <strong>지구관측위성</strong>은 기상·국방·자원 탐사에 활용되며, <strong>항법위성(GPS류)</strong>은 위치정보 서비스의 기반입니다.
+            SpaceX의 <strong>스타링크</strong>가 수천 기의 소형위성을 군집 배치하는 <span class="tip" data-tip="저지구궤도(Low Earth Orbit). 고도 500~2,000km의 궤도로, 정지궤도보다 통신 지연이 훨씬 짧아 위성인터넷에 유리합니다.">LEO</span> 군집위성 시대를 열며 위성 제조 단가 혁신을 이끌고 있습니다.
+          </div>
+        </div>
+      </div>
+      <div class="wave-divider"><svg viewBox="0 0 800 18"><path d="M0 9 C100 0 200 18 300 9 C400 0 500 18 600 9 C700 0 800 18 800 9 L800 18 L0 18Z" fill="rgba(120,90,220,0.55)"/></svg></div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">국내 위성 제조 · 부품</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=047810" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>한국항공우주<span class="co-tag-ext">047810</span></a>
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=099410" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>AP위성<span class="co-tag-ext">099410</span></a>
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=271560" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>에이피알<span class="co-tag-ext">271560</span></a>
+          <span class="co-tag soon">+ 쎄트렉아이 · 한화시스템 추가 예정</span>
+        </div>
+      </div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">글로벌 위성 운용</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <span class="co-tag soon">+ SpaceX(Starlink) · Planet Labs · Maxar 추가 예정</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 지상장비 -->
+    <div class="section-card" id="sec-ground">
+      <div class="sc-header">
+        <div class="sc-icon">📡</div>
+        <div class="sc-info">
+          <div class="sc-tag">Ground Segment · 지상장비</div>
+          <div class="sc-title">안테나 · 관제 · 단말기</div>
+          <div class="sc-desc">
+            위성과 <strong>'지상을 연결하는 인프라 단계'</strong>입니다. <strong>지상국 안테나</strong>는 위성에서 오는 신호를 수신·송신하고, <strong>위성 관제 시스템</strong>은 궤도상의 위성을 실시간으로 제어합니다.
+            <strong>위성 단말기</strong>는 개인·기업이 위성 서비스에 접속하는 수신기로, 스타링크 단말기처럼 소형·저가화가 빠르게 진행되고 있습니다.
+            지상장비는 전 세계 위성 서비스 확대와 함께 <strong>꾸준히 증가하는 안정적 수요</strong>를 가진 분야입니다.
+          </div>
+        </div>
+      </div>
+      <div class="wave-divider"><svg viewBox="0 0 800 18"><path d="M0 9 C100 0 200 18 300 9 C400 0 500 18 600 9 C700 0 800 18 800 9 L800 18 L0 18Z" fill="rgba(120,90,220,0.55)"/></svg></div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">안테나 · 위성 단말기</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=099410" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>AP위성<span class="co-tag-ext">099410</span></a>
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=035290" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>골드퍼시픽<span class="co-tag-ext">035290</span></a>
+          <span class="co-tag soon">+ 인텔리안테크 · 인비저블리티 추가 예정</span>
+        </div>
+      </div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">관제 · 운용 소프트웨어</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <span class="co-tag soon">+ Kratos Defense · KSAT · 한국전자통신연구원(ETRI) 추가 예정</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ 서비스·데이터 -->
+    <div class="section-card" id="sec-service">
+      <div class="sc-header">
+        <div class="sc-icon">🌐</div>
+        <div class="sc-info">
+          <div class="sc-tag">Space Services & Data · 서비스</div>
+          <div class="sc-title">위성통신 · 위성영상 · PNT</div>
+          <div class="sc-desc">
+            우주 인프라를 활용해 <strong>'실제 가치를 창출하는 최하류 단계'</strong>입니다. <strong>위성통신</strong>은 오지·해상·항공기에 인터넷을 제공하고, <strong>위성영상</strong>은 농업·보험·국방·재난대응에 활용됩니다.
+            <strong>PNT(위치·항법·시각)</strong>는 GPS를 기반으로 자율주행·드론·스마트시티의 근간이 되는 서비스입니다.
+            우주 데이터는 AI와 결합해 <strong>지구 관측 인텔리전스</strong>로 진화하며 새로운 수익 모델을 만들어가고 있습니다.
+          </div>
+        </div>
+      </div>
+      <div class="wave-divider"><svg viewBox="0 0 800 18"><path d="M0 9 C100 0 200 18 300 9 C400 0 500 18 600 9 C700 0 800 18 800 9 L800 18 L0 18Z" fill="rgba(120,90,220,0.55)"/></svg></div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">위성통신 · 위성인터넷</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=099410" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>AP위성<span class="co-tag-ext">099410</span></a>
+          <span class="co-tag soon">+ KT SAT · 위성사업자 추가 예정</span>
+        </div>
+      </div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">위성영상 · 지구관측 데이터</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <a class="co-tag naver" href="https://finance.naver.com/item/main.naver?code=099410" target="_blank" rel="noopener"><span class="co-tag-flag">🇰🇷</span>쎄트렉아이<span class="co-tag-ext">099410</span></a>
+          <span class="co-tag soon">+ Planet Labs · Maxar · Satellogic 추가 예정</span>
+        </div>
+      </div>
+      <div class="industry-group">
+        <div class="ig-label"><div class="ig-dot"></div><div class="ig-title">PNT · 항법 서비스</div><div class="ig-line"></div></div>
+        <div class="co-tags">
+          <span class="co-tag soon">+ u-blox · Trimble · 국내 GPS 수신칩 기업 추가 예정</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="footer-emoji">🚀 🛰️ ✨</div>
+    기업 정보는 공시 및 네이버 금융 참조 · 투자 권유 아님
+  </div>
+</div>
+
+<script>
+function showSection(key, tabEl) {
+  document.querySelectorAll('.vc-step').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  const display = document.querySelector('.section-display');
+  display.style.animation = 'none';
+  document.querySelectorAll('.section-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('sec-' + key).classList.add('active');
+  void display.offsetWidth;
+  display.style.animation = 'fadeUp 0.35s ease both';
+}
+window.addEventListener('load', () => showSection('launch', document.getElementById('tab-launch')));
+</script>
+</body>
+</html>

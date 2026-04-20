@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>포스코인터내셔널 · 산업 탐사도</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Noto Sans KR',sans-serif;
+    background:linear-gradient(180deg,#e8f4fc 0%,#d4ecfa 30%,#c5e3f6 60%,#b8dcf4 100%);
+    min-height:100vh; color:#1a2a3a; overflow-x:hidden;
+  }
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(ellipse 70% 50% at 30% 20%, rgba(255,255,255,0.5) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 70%, rgba(100,180,240,0.15) 0%, transparent 60%);
+  }
+  /* ── 코스틱 빛줄기 (수면 통과 햇빛) ── */
+  body::after {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(ellipse 25% 35% at 25% 15%, rgba(255,255,200,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 20% 30% at 65% 25%, rgba(255,255,220,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 15% 25% at 45% 10%, rgba(200,240,255,0.1) 0%, transparent 70%);
+    animation: caustic 7s ease-in-out infinite alternate;
+  }
+  @keyframes caustic {
+    0%   { opacity:0.6; transform:scale(1) translate(0,0); }
+    50%  { opacity:1;   transform:scale(1.06) translate(12px,-6px); }
+    100% { opacity:0.5; transform:scale(0.96) translate(-10px,8px); }
+  }
+
+  /* ── 수면 파도 헤더 ── */
+  .wave-top{position:fixed;top:0;left:0;right:0;height:60px;pointer-events:none;z-index:0;overflow:hidden;}
+  .wave-top svg{width:200%;height:100%;animation:waveScroll 8s linear infinite;}
+  @keyframes waveScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  /* ── 작은 물고기 떼 ── */
+  .fish-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .fish{position:absolute;animation:swim linear infinite;}
+  .fish svg{width:100%;height:100%;}
+  .fish:nth-child(1){width:18px;top:18%;right:-30px;animation-duration:22s;animation-delay:0s;}
+  .fish:nth-child(2){width:14px;top:35%;right:-30px;animation-duration:28s;animation-delay:4s;}
+  .fish:nth-child(3){width:16px;top:55%;right:-30px;animation-duration:25s;animation-delay:8s;}
+  .fish:nth-child(4){width:12px;top:72%;right:-30px;animation-duration:20s;animation-delay:12s;}
+  .fish:nth-child(5){width:15px;top:25%;right:-30px;animation-duration:30s;animation-delay:6s;}
+  @keyframes swim{0%{transform:translateX(0)}100%{transform:translateX(calc(-100vw - 40px))}}
+
+  /* ── 거품 ── */
+  .bubbles-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .bubble{position:absolute;bottom:-20px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,255,255,0.85),rgba(180,220,255,0.3));border:1px solid rgba(255,255,255,0.5);animation:rise linear infinite;}
+  .bubble:nth-child(1){width:6px;height:6px;left:8%;animation-duration:16s;}
+  .bubble:nth-child(2){width:10px;height:10px;left:25%;animation-duration:22s;animation-delay:4s;}
+  .bubble:nth-child(3){width:5px;height:5px;left:50%;animation-duration:14s;animation-delay:8s;}
+  .bubble:nth-child(4){width:8px;height:8px;left:68%;animation-duration:19s;animation-delay:2s;}
+  .bubble:nth-child(5){width:6px;height:6px;left:85%;animation-duration:15s;animation-delay:6s;}
+  @keyframes rise{0%{transform:translateY(0);opacity:0}10%{opacity:0.7}90%{opacity:0.25}100%{transform:translateY(-100vh);opacity:0}}
+
+  /* ── 해초 ── */
+  .seaweed{position:fixed;bottom:0;pointer-events:none;z-index:0;opacity:0.15;}
+  .seaweed-left{left:0;}
+  .seaweed-right{right:0;transform:scaleX(-1);}
+  .seaweed svg path{transform-origin:bottom center;animation:sway 4s ease-in-out infinite alternate;}
+  .seaweed svg path:nth-child(2){animation-duration:5.5s;animation-delay:0.7s;}
+  @keyframes sway{0%{transform:rotate(-7deg)}100%{transform:rotate(7deg)}}
+
+  /* ── 고래 마스코트 ── */
+  .whale-mascot{
+    position:fixed;top:20px;right:-60px;
+    width:360px;opacity:0.13;
+    pointer-events:none;z-index:0;
+    animation:whaleFloat 12s ease-in-out infinite;
+    filter:drop-shadow(0 0 20px rgba(80,180,255,0.3));
+  }
+  @keyframes whaleFloat{
+    0%,100%{transform:translateY(0) rotate(-1deg);}
+    50%{transform:translateY(-16px) rotate(2deg);}
+  }
+
+  /* ── 섹션 파도 디바이더 ── */
+  .wave-section{width:100%;height:24px;overflow:hidden;margin:6px 0 20px;opacity:0.25;}
+  .wave-section svg{width:200%;animation:waveScroll 8s linear infinite;}
+
+  /* ── 레이아웃 ── */
+  .page{position:relative;z-index:1;padding:40px 24px 80px;max-width:920px;margin:0 auto;}
+
+  @media (max-width: 600px) {
+    .page { padding: 24px 16px 80px; }
+    /* KPI 카드 — 2열 그리드로 */
+    .kpi-snap { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .kpi { padding: 12px 14px; }
+    .kpi-value { font-size: 17px; }
+    /* 히어로 h1 */
+    .hero h1 { font-size: 32px; }
+    /* 프로필 카드 label 폭 줄이기 */
+    .profile-label { width: 58px; font-size: 11px; }
+    .profile-value { font-size: 13px; }
+    /* 개요 박스 */
+    .overview-box { font-size: 13px; line-height: 1.85; }
+    /* 섹션 타이틀 */
+    .section-title { font-size: 12px; letter-spacing: 1.5px; }
+    /* 밸류체인 */
+    .vc-flow { gap: 0; }
+    .vc-node { min-width: 56px; padding: 8px 8px; font-size: 10px; }
+    .vc-node-icon { font-size: 16px; }
+    .vc-sep { font-size: 12px; padding: 0 2px; }
+    /* 거점 테이블 → 카드 전환 */
+    .factory-table-wrap { display: none !important; }
+    .factory-cards-wrap { display: flex !important; }
+    .overseas-table-wrap { display: none !important; }
+    .overseas-cards-wrap { display: flex !important; }
+    /* 위치 컬럼 숨기기 */
+    .location-col { display: none; }
+  }
+
+  /* ── 네비 ── */
+  .topnav{display:flex;align-items:center;gap:12px;margin-bottom:44px;animation:fadeDown 0.5s ease both;}
+  .back-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:#1a6aaa;text-decoration:none;background:rgba(255,255,255,0.6);border:1px solid rgba(30,100,180,0.2);padding:6px 14px;border-radius:20px;transition:background 0.2s;backdrop-filter:blur(6px);}
+  .back-btn:hover{background:rgba(255,255,255,0.85);}
+  .breadcrumb{font-size:12px;color:#5a8ab0;}
+  .breadcrumb span{color:#c06a10;font-weight:700;}
+
+  /* ── 히어로 ── */
+  .hero{margin-bottom:32px;animation:fadeDown 0.6s 0.05s ease both;}
+  .company-badge{
+    display:inline-flex;align-items:center;gap:10px;margin-bottom:18px;
+    background:rgba(200,100,20,0.08);border:1px solid rgba(200,100,20,0.2);
+    padding:7px 16px;border-radius:24px;
+  }
+  .badge-icon{font-size:20px;}
+  .badge-text{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#b06010;}
+  .hero h1{font-size:clamp(26px,5vw,42px);font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:12px;color:#0a2a4a;}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,#c06a10,#e09030);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  /* ── 기업 아이덴티티 통합 박스 ── */
+  .company-profile-box{
+    background:rgba(255,255,255,0.55);
+    border:1px solid rgba(255,255,255,0.5);box-shadow:0 4px 24px rgba(0,60,120,0.06),inset 0 1px 0 rgba(255,255,255,0.6);
+    border-radius:16px;
+    padding:22px 24px 20px;
+    margin-bottom:28px;
+    backdrop-filter:blur(12px);
+    box-shadow:0 4px 20px rgba(0,60,120,0.06);
+  }
+  .profile-grid{display:flex;flex-direction:column;gap:11px;}
+  .profile-row{display:flex;align-items:baseline;gap:14px;font-size:14px;line-height:1.55;}
+  .profile-label{ 
+    width:76px;flex-shrink:0;
+    font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+    color:#5a7a9a;padding-top:1px;
+  }
+  .profile-value{color:#2a4a6a;flex:1;}
+  .profile-divider{height:1px;background:rgba(0,60,120,0.08);margin:16px 0;}
+  .profile-biz-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5a7a9a;margin-bottom:12px;}
+  .profile-biz-items{display:flex;flex-direction:column;gap:9px;}
+  .profile-biz-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#3a5a7a;line-height:1.65;}
+  .biz-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+
+  /* ── KPI 스냅샷 ── */
+  .kpi-snap{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+    gap:10px;margin-bottom:36px;
+  }
+  .kpi{
+    background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.4);box-shadow:0 2px 16px rgba(0,60,120,0.05),inset 0 1px 0 rgba(255,255,255,0.5);
+    border-radius:14px;padding:16px 18px;
+    backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,60,120,0.04);
+  }
+  .kpi-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#a07030;margin-bottom:6px;}
+  .kpi-value{font-size:21px;font-weight:900;color:#1a2a3a;letter-spacing:-0.5px;line-height:1;}
+  .kpi-note{font-size:11px;color:#7a8a9a;margin-top:5px;line-height:1.5;}
+  .kpi-delta{font-size:12px;font-weight:700;margin-top:4px;}
+  .kpi-delta.up{color:#16864a;}
+  .kpi-delta.down{color:#c43030;}
+
+  /* ── 개요 박스 ── */
+  .overview-box{
+    background:rgba(255,255,255,0.55);
+    border:1px solid rgba(200,120,40,0.18);
+    border-left:3px solid #c06a10;
+    border-radius:0 12px 12px 0;
+    padding:18px 22px;
+    font-size:15px;line-height:2;color:#2a3a4a;
+    margin-bottom:36px;
+    backdrop-filter:blur(8px);
+  }
+  .overview-box strong {color:#a05810;font-weight:700;}
+
+  /* ── 섹션 공통 ── */
+  .section{margin-bottom:40px;animation:fadeUp 0.6s ease both;}
+  .section-title{
+
+    display:flex;align-items:center;gap:10px;flex-wrap:nowrap;
+    font-size:14px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+    color:#b06010;margin-bottom:18px;
+  }
+  .section-title::after{content:'';flex:1;height:1px;background:rgba(180,100,30,0.2);}
+
+  /* ── 밸류체인 포지션 ── */
+  .vc-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:4px 0;margin-bottom:8px;}
+  .vc-node{
+
+    display:flex;flex-direction:column;align-items:center;gap:5px;
+    padding:10px 14px;border-radius:10px;
+    font-size:12px;font-weight:700;text-align:center;
+    border:1px solid rgba(0,60,120,0.1);
+    background:rgba(255,255,255,0.4);
+    min-width:78px;color:#6a8aa0;white-space:nowrap;
+  }
+  .vc-node.highlight{background:rgba(200,100,20,0.12);border-color:#c06a10;color:#8a4a00;box-shadow:0 0 16px rgba(200,100,20,0.12);}
+  .vc-node-icon{font-size:20px;}
+  .vc-sep{color:rgba(0,60,120,0.2);font-size:16px;padding:0 5px;flex-shrink:0;}
+  .vc-caption{font-size:14px;color:#4a6a8a;margin-top:10px;line-height:1.75;}
+  .vc-caption strong{color:#a05810;}
+
+  /* ── 사업 세그먼트 ── */
+  .segments-wrap{display:flex;flex-direction:column;gap:12px;}
+  .seg{
+    background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.4);box-shadow:0 2px 16px rgba(0,60,120,0.04),inset 0 1px 0 rgba(255,255,255,0.5);
+    border-radius:14px;padding:20px;
+    transition:border-color 0.2s;backdrop-filter:blur(8px);
+  }
+  .seg:hover{border-color:rgba(200,100,20,0.3);}
+  .seg-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px;}
+  .seg-left{display:flex;align-items:flex-start;gap:12px;flex:1;}
+  .seg-icon{font-size:26px;flex-shrink:0;margin-top:2px;}
+  .seg-meta{}
+  .seg-name{font-size:18px;font-weight:800;color:#8a4a00;margin-bottom:3px;}
+  .seg-products{font-size:14px;color:#5a7a9a;line-height:1.6;}
+  .seg-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+  .seg-share-val{font-size:22px;font-weight:900;color:#c06a10;letter-spacing:-1px;}
+  .seg-share-lbl{font-size:11px;color:#6a8a9a;}
+  .seg-bars{display:flex;flex-direction:column;gap:6px;}
+  .seg-bar-row{display:flex;align-items:center;gap:10px;}
+  .seg-bar-label{font-size:14px;color:#5a7a9a;width:58px;flex-shrink:0;text-align:right;}
+  .seg-bar-track{flex:1;height:6px;background:rgba(0,60,120,0.06);border-radius:3px;overflow:hidden;}
+  .seg-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease;}
+  .seg-bar-fill.opm{background:linear-gradient(90deg,#d07820,#f0b050);}
+  .seg-bar-fill.share{background:linear-gradient(90deg,#2a6ab0,#5a9ad8);}
+  .seg-bar-val{font-size:14px;font-weight:700;width:38px;flex-shrink:0;}
+  .seg-bar-val.orange{color:#c06a10;}
+  .seg-bar-val.blue{color:#2a6ab0;}
+  .seg-note{font-size:14px;color:#5a7a9a;margin-top:10px;line-height:1.75;border-top:1px solid rgba(0,60,120,0.06);padding-top:10px;}
+  .seg-note strong{color:#a05810;}
+
+  /* ── 모바일 세그먼트 반응형 ── */
+  @media (max-width: 600px) {
+    .seg { padding: 16px; }
+    .seg-top {
+      flex-direction: column;
+      gap: 10px;
+    }
+    .seg-left { gap: 10px; }
+    .seg-icon { font-size: 22px; margin-top: 1px; }
+    .seg-name { font-size: 16px; }
+    .seg-products { display: none; } /* 모바일에서 스펙 텍스트 숨김 — 본문 설명으로 대체 */
+    .seg-right {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .seg-right span { font-size: 10px !important; padding: 3px 8px !important; }
+    .seg-note { font-size: 13px; line-height: 1.7; }
+  }
+
+  /* ── 재무 추이 테이블 ── */
+  .fin-table-wrap{overflow-x:auto;}
+  .fin-table{width:100%;border-collapse:collapse;font-size:14px;}
+  .fin-table th{
+    font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+    color:#5a7a9a;text-align:right;padding:8px 12px;
+    border-bottom:1px solid rgba(0,60,120,0.08);
+    background:rgba(255,255,255,0.3);
+  }
+  .fin-table th:first-child{text-align:left;}
+  .fin-table td{
+    padding:10px 12px;text-align:right;
+    border-bottom:1px solid rgba(0,60,120,0.05);
+    color:#3a5a7a;
+  }
+  .fin-table td:first-child{text-align:left;font-weight:700;color:#4a6a8a;font-size:13px;}
+  .fin-table tr.highlight-row td{background:rgba(200,120,40,0.06);}
+  .fin-table tr.highlight-row td:first-child{color:#a05810;}
+  .fin-table .num-good{color:#16864a;font-weight:700;}
+  .fin-table .num-main{color:#a05810;font-weight:800;font-size:13px;}
+  .fin-table .num-est{color:#7a9ab0;}
+
+  /* 미니 바 */
+  .mini-bar-cell{display:flex;align-items:center;gap:6px;justify-content:flex-end;}
+  .mini-bar-track{width:60px;height:5px;background:rgba(0,60,120,0.06);border-radius:3px;overflow:hidden;flex-shrink:0;}
+  .mini-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#d07820,#f0b050);}
+
+  /* ── 밸류에이션 ── */
+  .val-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px;}
+  .val-card{background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.08);border-radius:14px;padding:18px;}
+  .val-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#5a7a9a;margin-bottom:8px;}
+  .val-main{font-size:24px;font-weight:900;color:#8a4a00;letter-spacing:-1px;margin-bottom:4px;}
+  .val-comp{display:flex;align-items:center;gap:6px;font-size:10px;color:#5a7a9a;}
+  .val-comp-num{font-weight:700;color:#3a5a7a;}
+  .val-basis{font-size:9px;color:#7a9ab0;margin-top:6px;line-height:1.5;}
+
+  /* ── 주주 구성 ── */
+  .shareholders{display:flex;flex-direction:column;gap:10px;}
+  .sh-row{display:flex;align-items:center;gap:14px;}
+  .sh-name{font-size:14px;font-weight:700;color:#2a4a6a;width:160px;flex-shrink:0;}
+  .sh-bar-track{flex:1;height:8px;background:rgba(0,60,120,0.06);border-radius:4px;overflow:hidden;}
+  .sh-bar-fill{height:100%;border-radius:4px;}
+  .sh-pct{font-size:14px;font-weight:800;width:46px;text-align:right;flex-shrink:0;}
+
+  /* ── 투자 포인트 ── */
+  .points{display:flex;flex-direction:column;gap:10px;}
+  .point{display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.4);box-shadow:0 2px 12px rgba(0,60,120,0.04),inset 0 1px 0 rgba(255,255,255,0.5);border-radius:12px;padding:16px;backdrop-filter:blur(6px);}
+  .point-num{width:26px;height:26px;border-radius:50%;background:rgba(200,100,20,0.12);border:1px solid rgba(200,100,20,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#b06010;flex-shrink:0;}
+  .point-title{font-size:15px;font-weight:800;color:#1a2a3a;margin-bottom:4px;}
+  .point-desc{font-size:13px;color:#4a6a8a;line-height:1.75;}
+
+  /* ── 리스크 ── */
+  .risks{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+  .risk{background:rgba(255,230,230,0.5);border:1px solid rgba(200,60,60,0.15);border-radius:12px;padding:14px 16px;backdrop-filter:blur(6px);}
+  .risk-title{font-size:14px;font-weight:700;color:#b03030;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+  .risk-desc{font-size:13px;color:#5a4040;line-height:1.65;}
+
+  /* ── 관련 기업 ── */
+  .related{display:flex;flex-wrap:wrap;gap:8px;}
+  .rel-chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.55);border:1px solid rgba(0,60,120,0.12);border-radius:20px;padding:7px 16px;font-size:13px;color:#3a6a9a;text-decoration:none;transition:all 0.2s;}
+  .rel-chip:hover{background:rgba(200,100,20,0.08);border-color:rgba(200,100,20,0.3);color:#8a4a00;}
+
+  /* ── 링크 버튼 ── */
+  .link-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(200,100,20,0.08);border:1px solid rgba(200,100,20,0.25);color:#b06010;font-size:12px;font-weight:700;padding:10px 20px;border-radius:24px;text-decoration:none;transition:all 0.2s;}
+  .link-btn:hover{background:rgba(200,100,20,0.15);border-color:#c06a10;}
+
+  /* ── 출처 / 데이터 주석 ── */
+  .data-note{font-size:12px;color:#6a8aa0;line-height:1.8;padding:12px 14px;border:1px solid rgba(0,60,120,0.06);border-radius:8px;background:rgba(255,255,255,0.35);}
+  .data-note strong{color:#a05810;}
+
+  /* ── 편집 모드 ── */
+
+  /* ── 파동 구분선 ── */
+  .wave-div{width:100%;height:18px;overflow:hidden;margin:4px 0 22px;opacity:0.2;}
+  .wave-div svg{width:200%;animation:wavescroll 7s linear infinite;}
+  @keyframes wavescroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  /* ── 툴팁 ── */
+  .tip{position:relative;display:inline;border-bottom:1px dashed currentColor;color:inherit;cursor:help;white-space:nowrap;opacity:0.85;}
+  /* 툴팁 말풍선은 JS로 동적 위치 조정 (모바일 화면 잘림 방지) */
+  .tip-popup{
+    position:fixed;z-index:9999;
+    background:#fff;border:1px solid rgba(200,100,20,0.25);border-radius:10px;
+    padding:8px 12px;font-size:12px;line-height:1.7;color:#3a5a7a;
+    white-space:pre-wrap;width:220px;max-width:calc(100vw - 32px);
+    box-shadow:0 8px 24px rgba(0,60,120,0.12);font-weight:400;letter-spacing:0;
+    pointer-events:none;opacity:0;transition:opacity 0.15s;
+    font-family:'Noto Sans KR',sans-serif;
+  }
+  .tip-popup.visible{opacity:1;}
+
+  
+  .page-footer{text-align:center;margin-top:48px;color:#6a8aa0;font-size:11px;line-height:2;}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+
+<div class="bubbles-layer">
+  <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+  <div class="bubble"></div><div class="bubble"></div>
+</div>
+
+<!-- 수면 파도 -->
+<div class="wave-top">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <path d="M0 25 C150 10 300 40 450 25 C600 10 750 40 900 25 C1050 10 1200 40 1200 25 L1200 0 L0 0Z" fill="rgba(160,210,245,0.3)"/>
+    <path d="M0 32 C150 18 300 46 450 32 C600 18 750 46 900 32 C1050 18 1200 46 1200 32 L1200 0 L0 0Z" fill="rgba(130,195,240,0.2)"/>
+  </svg>
+</div>
+
+<!-- 작은 물고기 떼 -->
+<div class="fish-layer">
+  <div class="fish"><svg viewBox="0 0 24 12" fill="none"><path d="M0 6 C4 2 8 0 14 2 C18 3 22 5 24 6 C22 7 18 9 14 10 C8 12 4 10 0 6Z" fill="rgba(60,120,180,0.2)"/><circle cx="18" cy="5.5" r="1" fill="rgba(60,120,180,0.35)"/></svg></div>
+  <div class="fish"><svg viewBox="0 0 24 12" fill="none"><path d="M0 6 C4 2 8 0 14 2 C18 3 22 5 24 6 C22 7 18 9 14 10 C8 12 4 10 0 6Z" fill="rgba(80,140,200,0.18)"/><circle cx="18" cy="5.5" r="1" fill="rgba(80,140,200,0.3)"/></svg></div>
+  <div class="fish"><svg viewBox="0 0 24 12" fill="none"><path d="M0 6 C4 2 8 0 14 2 C18 3 22 5 24 6 C22 7 18 9 14 10 C8 12 4 10 0 6Z" fill="rgba(50,110,170,0.2)"/><circle cx="18" cy="5.5" r="1" fill="rgba(50,110,170,0.35)"/></svg></div>
+  <div class="fish"><svg viewBox="0 0 24 12" fill="none"><path d="M0 6 C4 2 8 0 14 2 C18 3 22 5 24 6 C22 7 18 9 14 10 C8 12 4 10 0 6Z" fill="rgba(70,130,190,0.15)"/><circle cx="18" cy="5.5" r="1" fill="rgba(70,130,190,0.28)"/></svg></div>
+  <div class="fish"><svg viewBox="0 0 24 12" fill="none"><path d="M0 6 C4 2 8 0 14 2 C18 3 22 5 24 6 C22 7 18 9 14 10 C8 12 4 10 0 6Z" fill="rgba(60,120,180,0.17)"/><circle cx="18" cy="5.5" r="1" fill="rgba(60,120,180,0.3)"/></svg></div>
+</div>
+
+<!-- 해초 -->
+<div class="seaweed seaweed-left">
+  <svg width="80" height="280" viewBox="0 0 80 280" fill="none">
+    <path d="M25 280 C25 255 8 238 18 215 C28 192 44 202 40 178 C36 154 16 148 24 122 C32 96 50 102 46 78" stroke="#20c888" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M50 280 C50 258 66 244 55 221 C44 198 30 208 34 184 C38 160 56 155 52 131" stroke="#18b078" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </svg>
+</div>
+<div class="seaweed seaweed-right">
+  <svg width="70" height="260" viewBox="0 0 70 260" fill="none">
+    <path d="M22 260 C22 238 6 222 16 200 C26 178 42 188 38 165 C34 142 15 136 22 112" stroke="#20c888" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M46 260 C46 242 60 230 50 208 C40 186 26 196 30 172" stroke="#18b078" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  </svg>
+</div>
+
+
+
+<!-- 수면 파도 -->
+<div class="wave-top">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+    <path d="M0 30 C150 12 300 48 450 30 C600 12 750 48 900 30 C1050 12 1200 48 1200 30 L1200 0 L0 0Z" fill="rgba(80,180,255,0.12)"/>
+    <path d="M0 38 C150 22 300 54 450 38 C600 22 750 54 900 38 C1050 22 1200 54 1200 38 L1200 0 L0 0Z" fill="rgba(60,150,220,0.08)"/>
+  </svg>
+</div>
+
+<!-- 물고기 -->
+<div class="fish-layer">
+  <div class="fish"><svg viewBox="0 0 28 14" fill="none"><path d="M0 7 C5 2 10 0 16 2 C21 4 26 6 28 7 C26 8 21 10 16 12 C10 14 5 12 0 7Z" fill="rgba(100,200,255,0.18)"/><circle cx="21" cy="6" r="1.2" fill="rgba(100,200,255,0.35)"/></svg></div>
+  <div class="fish"><svg viewBox="0 0 22 11" fill="none"><path d="M0 5.5 C4 2 8 0 13 2 C17 3 20 5 22 5.5 C20 6 17 8 13 9 C8 11 4 9 0 5.5Z" fill="rgba(80,180,240,0.15)"/><circle cx="16" cy="5" r="1" fill="rgba(80,180,240,0.3)"/></svg></div>
+  <div class="fish"><svg viewBox="0 0 25 12" fill="none"><path d="M0 6 C4 2 9 0 14 2 C19 4 23 5.5 25 6 C23 7 19 9 14 10 C9 12 4 10 0 6Z" fill="rgba(120,210,255,0.16)"/><circle cx="19" cy="5.5" r="1.1" fill="rgba(120,210,255,0.32)"/></svg></div>
+  <div class="fish"><svg viewBox="0 0 18 9" fill="none"><path d="M0 4.5 C3 1.5 6 0 10 1.5 C13 3 16 4 18 4.5 C16 5 13 6.5 10 7.5 C6 9 3 7.5 0 4.5Z" fill="rgba(60,160,220,0.14)"/><circle cx="13" cy="4" r="0.9" fill="rgba(60,160,220,0.28)"/></svg></div>
+</div>
+
+<!-- 거품 -->
+<div class="bubbles-layer">
+  <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+  <div class="bubble"></div><div class="bubble"></div>
+</div>
+
+<!-- 해초 -->
+<div class="seaweed seaweed-left">
+  <svg width="90" height="300" viewBox="0 0 90 300" fill="none">
+    <path d="M28 300 C28 272 8 254 20 228 C32 202 52 214 47 188 C42 162 18 155 27 127 C36 99 58 106 53 80" stroke="#1a8878" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path d="M56 300 C56 276 74 260 62 235 C50 210 32 222 36 196 C40 170 62 163 57 137" stroke="#0e7a68" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  </svg>
+</div>
+<div class="seaweed seaweed-right">
+  <svg width="80" height="280" viewBox="0 0 80 280" fill="none">
+    <path d="M25 280 C25 255 7 240 17 216 C27 192 45 203 41 178 C37 153 16 146 23 120" stroke="#1a8878" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+    <path d="M50 280 C50 260 66 246 55 223 C44 200 28 210 32 186" stroke="#0e7a68" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </svg>
+</div>
+
+<!-- 고래 마스코트 SVG -->
+<div class="whale-mascot">
+  <svg viewBox="0 0 380 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="whaleBody" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#4ab8e8"/>
+        <stop offset="60%" stop-color="#2a88c8"/>
+        <stop offset="100%" stop-color="#1a5888"/>
+      </linearGradient>
+      <linearGradient id="whaleBelly" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="rgba(200,240,255,0.5)"/>
+        <stop offset="100%" stop-color="rgba(120,200,240,0.2)"/>
+      </linearGradient>
+    </defs>
+    <!-- 꼬리지느러미 -->
+    <path d="M300 100 C330 70 360 60 370 80 C380 95 360 110 340 108 C360 125 375 140 365 155 C355 165 330 150 300 120Z" fill="url(#whaleBody)" opacity="0.9"/>
+    <!-- 몸통 -->
+    <ellipse cx="175" cy="110" rx="165" ry="68" fill="url(#whaleBody)"/>
+    <!-- 배 (밝은 패치) -->
+    <ellipse cx="165" cy="125" rx="120" ry="38" fill="url(#whaleBelly)"/>
+    <!-- 가슴지느러미 (왼쪽 아래) -->
+    <path d="M110 140 C90 165 65 175 55 165 C45 155 60 138 80 130 C95 124 108 130 110 140Z" fill="url(#whaleBody)" opacity="0.85"/>
+    <!-- 등지느러미 -->
+    <path d="M195 44 C205 20 225 10 235 22 C242 32 230 50 210 58Z" fill="url(#whaleBody)" opacity="0.9"/>
+    <!-- 머리 -->
+    <ellipse cx="48" cy="105" rx="52" ry="50" fill="url(#whaleBody)"/>
+    <!-- 눈 -->
+    <circle cx="42" cy="92" r="9" fill="rgba(200,240,255,0.95)"/>
+    <circle cx="44" cy="93" r="6" fill="#0a2840"/>
+    <circle cx="41" cy="90" r="2.5" fill="white" opacity="0.9"/>
+    <!-- 입 미소 -->
+    <path d="M22 115 C32 122 48 124 60 118" stroke="rgba(200,240,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- 분수공 물줄기 -->
+    <path d="M35 56 C30 38 28 22 32 10" stroke="rgba(200,240,255,0.5)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M32 10 C28 4 24 0 20 -4" stroke="rgba(200,240,255,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M32 10 C36 4 38 -1 40 -6" stroke="rgba(200,240,255,0.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- 물방울 -->
+    <circle cx="20" cy="-5" r="3" fill="rgba(200,240,255,0.3)"/>
+    <circle cx="40" cy="-7" r="2.5" fill="rgba(200,240,255,0.25)"/>
+    <circle cx="32" cy="-2" r="2" fill="rgba(200,240,255,0.3)"/>
+    <!-- 배 줄무늬 (진짜 혹등고래처럼) -->
+    <path d="M60 135 C90 145 130 148 170 145" stroke="rgba(160,220,255,0.15)" stroke-width="1.5" fill="none"/>
+    <path d="M65 142 C95 152 135 154 172 151" stroke="rgba(160,220,255,0.1)" stroke-width="1" fill="none"/>
+  </svg>
+</div>
+
+
+<div class="page">
+
+  <div class="topnav">
+    <a href="sector_energy.html" class="back-btn">← 에너지 섹터</a>
+    <div class="breadcrumb">산업 탐사도 › 에너지 › <span style="color:#c06a10;font-weight:700;">포스코인터내셔널</span></div>
+  </div>
+
+  <div class="hero">
+    <div class="company-badge">
+      <span class="badge-icon">🌏</span>
+      <span class="badge-text">LNG 밸류체인 · 자원개발 · 종합사업회사 · 3년 연속 영업이익 1조</span>
+    </div>
+    <h1>포스코<em>인터내셔널</em></h1>
+    <div style="font-size:12px;color:#4a7a9a;margin-top:-4px;margin-bottom:24px;letter-spacing:1px;">KOSPI 상장 · 047050 · 구 대우인터내셔널</div>
+
+    <!-- 핵심 투자 포인트 — 재구성 -->
+    <div style="background:linear-gradient(135deg,rgba(200,120,40,0.07),rgba(255,255,255,0.5));border:1px solid rgba(200,120,40,0.18);border-radius:16px;padding:20px 24px;margin-bottom:16px;backdrop-filter:blur(10px);">
+      <div style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#b06010;margin-bottom:4px;">🔦 핵심 투자 포인트</div>
+      <div style="font-size:13px;color:#8a6030;font-weight:600;margin-bottom:18px;">자세한 내용은 아래 사업 세그먼트 ↓</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <!-- ① LNG 밸류체인 동시 확장 -->
+        <div style="background:rgba(200,100,20,0.06);border:1px solid rgba(200,100,20,0.16);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+            <span style="font-size:11px;font-weight:900;color:#b06010;background:rgba(200,100,20,0.14);border:1px solid rgba(200,100,20,0.3);padding:3px 8px;border-radius:8px;flex-shrink:0;margin-top:2px;">①</span>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:#1a2a3a;line-height:1.4;margin-bottom:5px;">⚡ LNG 밸류체인 동시 확장 — 2026년</div>
+              <span style="font-size:11px;font-weight:700;color:#c06a10;background:rgba(200,100,20,0.1);border:1px solid rgba(200,100,20,0.22);padding:2px 8px;border-radius:8px;">세넥스 OP +90% · 터미널 +43%</span>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#5a3a10;line-height:1.75;">
+            세넥스 60PJ 증산 완전 반영으로 <strong>E&P 수익이 올라가고</strong>, 광양 2터미널(7·8호기) 완공으로 <strong>저장·트레이딩 능력도 동시에 커져요.</strong> 위에서 캐고 아래서 더 많이 담는 밸류체인 전체가 한 해에 확장되는 구조예요.
+          </div>
+        </div>
+
+        <!-- ② 팜유 수직계열화 -->
+        <div style="background:rgba(30,130,60,0.05);border:1px solid rgba(30,130,60,0.16);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+            <span style="font-size:11px;font-weight:900;color:#1a7040;background:rgba(30,130,60,0.12);border:1px solid rgba(30,130,60,0.28);padding:3px 8px;border-radius:8px;flex-shrink:0;margin-top:2px;">②</span>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:#1a2a3a;line-height:1.4;margin-bottom:5px;">🌾 팜유 수직계열화 완성 — 식량 퀀텀점프</div>
+              <span style="font-size:11px;font-weight:700;color:#1a7040;background:rgba(30,130,60,0.09);border:1px solid rgba(30,130,60,0.2);padding:2px 8px;border-radius:8px;">19만→55만톤 3배</span>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#1a3a20;line-height:1.75;">
+            PT.PAR 인수 + PT.ARC 정제공장 가동으로 <strong>농장→정제→판매 풀 밸류체인</strong>이 완성됐어요. 에너지처럼 직접 생산·보유하는 식량 자산이 생긴 거예요. 2026년 OP 급증이 수치로 확인되는 구간이에요.
+          </div>
+        </div>
+
+        <!-- ③ 희토류 탈중국 SCM -->
+        <div style="background:rgba(80,50,180,0.04);border:1px solid rgba(80,50,180,0.14);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+            <span style="font-size:11px;font-weight:900;color:#4a2a90;background:rgba(80,50,180,0.1);border:1px solid rgba(80,50,180,0.24);padding:3px 8px;border-radius:8px;flex-shrink:0;margin-top:2px;">③</span>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:#1a2a3a;line-height:1.4;margin-bottom:5px;">🧲 희토류 탈중국 — 지정학 안보 자산</div>
+              <span style="font-size:11px;font-weight:700;color:#4a2a90;background:rgba(80,50,180,0.08);border:1px solid rgba(80,50,180,0.18);padding:2px 8px;border-radius:8px;">유럽 2,600억 공급계약</span>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#2a1a4a;line-height:1.75;">
+            중국이 전 세계 희토류 생산의 80%를 장악한 상황에서, 비중국 25개사 협력으로 독자 공급망을 구축 중이에요. 미중 갈등이 심화될수록 <strong>대체 불가능한 포지션</strong>이 돼요.
+          </div>
+        </div>
+
+        <!-- ④ 구동모터코어 -->
+        <div style="background:rgba(40,100,200,0.04);border:1px solid rgba(40,100,200,0.14);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+            <span style="font-size:11px;font-weight:900;color:#1a5ab0;background:rgba(40,100,200,0.1);border:1px solid rgba(40,100,200,0.22);padding:3px 8px;border-radius:8px;flex-shrink:0;margin-top:2px;">④</span>
+            <div>
+              <div style="font-size:14px;font-weight:800;color:#1a2a3a;line-height:1.4;margin-bottom:5px;">🔋 구동모터코어 — 2026~27 성장 드라이버 후보</div>
+              <span style="font-size:11px;font-weight:700;color:#1a5ab0;background:rgba(40,100,200,0.08);border:1px solid rgba(40,100,200,0.18);padding:2px 8px;border-radius:8px;">흑자전환 · 3,500만대 수주</span>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#1a2a4a;line-height:1.75;">
+            2025년 흑자전환(OP 192억) 성공. 2033년까지 3,500만대 수주를 이미 확보했어요. 단, EV 시장 회복 속도에 따라 실적 반영 시점이 달라질 수 있어 <strong>현재보다 2026~2027 관점</strong>으로 봐야 해요.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 종합 한 줄 -->
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(200,120,40,0.07);border-radius:8px;font-size:13px;color:#7a4a10;line-height:1.75;border-left:3px solid #c06a10;">
+        💡 <strong>공통점</strong>: 모두 '트레이딩(중개)'에서 벗어나 직접 생산·제조·보유하는 자산 기반으로 전환 중이에요. 이것이 단순 상사와 다른 밸류에이션을 받는 근거예요.
+      </div>
+    </div>
+
+    <!-- 반드시 짚어야 할 점 -->
+    <div style="background:linear-gradient(135deg,rgba(180,40,40,0.06),rgba(255,255,255,0.5));border:1px solid rgba(180,60,60,0.22);border-radius:16px;padding:20px 24px;margin-bottom:28px;backdrop-filter:blur(10px);">
+      <div style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c03030;margin-bottom:4px;">⚠️ 반드시 짚어야 할 점</div>
+      <div style="font-size:13px;color:#a04040;font-weight:600;margin-bottom:16px;">투자 포인트의 반대편 — 리스크도 직시해야 해요</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <!-- ① 미얀마 이중 리스크 -->
+        <div style="background:rgba(180,40,40,0.05);border:1px solid rgba(180,40,40,0.18);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:900;color:#c03030;background:rgba(180,40,40,0.1);border:1px solid rgba(180,40,40,0.25);padding:2px 8px;border-radius:8px;">①</span>
+            <span style="font-size:14px;font-weight:800;color:#1a2a3a;">🇲🇲 미얀마 이중 리스크</span>
+          </div>
+          <div style="margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:700;color:#c03030;background:rgba(180,40,40,0.08);border:1px solid rgba(180,40,40,0.2);padding:2px 8px;border-radius:8px;">전사 OP 34% 의존 · 단일 최대 리스크</span>
+          </div>
+          <div style="font-size:13px;color:#4a1a1a;line-height:1.75;">
+            <strong>군부 정치 리스크</strong>와 <strong>미중 갈등 리스크</strong>가 동시에 작용하는 구조예요. 가스전 국유화 또는 중국향 공급 계약 이행 차질이 발생하면 전사 실적 타격이 매우 커요. 두 리스크가 동시에 현실화될 가능성도 배제할 수 없어요.
+          </div>
+        </div>
+
+        <!-- ② CPO 가격 리스크 (구 ④) -->
+        <div style="background:rgba(180,40,40,0.05);border:1px solid rgba(180,40,40,0.18);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:900;color:#c03030;background:rgba(180,40,40,0.1);border:1px solid rgba(180,40,40,0.25);padding:2px 8px;border-radius:8px;">②</span>
+            <span style="font-size:14px;font-weight:800;color:#1a2a3a;">🌴 CPO 가격 — 식량 이익의 양면</span>
+          </div>
+          <div style="margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:700;color:#c03030;background:rgba(180,40,40,0.08);border:1px solid rgba(180,40,40,0.2);padding:2px 8px;border-radius:8px;">가격 하락 시 이익 민감도 高</span>
+          </div>
+          <div style="font-size:13px;color:#4a1a1a;line-height:1.75;">
+            팜유를 투자 포인트로 올린 만큼, 반대급부 리스크도 명확해요. CPO 국제 가격이 하락하면 BIA·PAR·ARC 전체 수익이 동시에 압박받아요. 인도네시아 수출세 정책 변동 리스크도 상존해요.
+          </div>
+        </div>
+
+        <!-- ③ 철강 트레이딩 구조 부진 -->
+        <div style="background:rgba(180,40,40,0.05);border:1px solid rgba(180,40,40,0.18);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:900;color:#c03030;background:rgba(180,40,40,0.1);border:1px solid rgba(180,40,40,0.25);padding:2px 8px;border-radius:8px;">③</span>
+            <span style="font-size:14px;font-weight:800;color:#1a2a3a;">🌐 철강 트레이딩 — 구조적 부진</span>
+          </div>
+          <div style="margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:700;color:#c03030;background:rgba(180,40,40,0.08);border:1px solid rgba(180,40,40,0.2);padding:2px 8px;border-radius:8px;">매출 최대 · OP 기여 낮음</span>
+          </div>
+          <div style="font-size:13px;color:#4a1a1a;line-height:1.75;">
+            중국 공급 과잉으로 마진 구조적 축소가 지속돼요. 매출 비중은 크지만 이익 기여도가 낮아요. 친환경차·신재생에너지용 고부가 강재로 전환하지 못하면 드래그 요인이 계속될 수 있어요.
+          </div>
+        </div>
+
+        <!-- ④ 밸류에이션 부담 (구 ②) -->
+        <div style="background:rgba(180,40,40,0.05);border:1px solid rgba(180,40,40,0.18);border-radius:12px;padding:14px 16px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:900;color:#c03030;background:rgba(180,40,40,0.1);border:1px solid rgba(180,40,40,0.25);padding:2px 8px;border-radius:8px;">④</span>
+            <span style="font-size:14px;font-weight:800;color:#1a2a3a;">📈 단기 급등 후 밸류에이션 부담</span>
+          </div>
+          <div style="margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:700;color:#c03030;background:rgba(180,40,40,0.08);border:1px solid rgba(180,40,40,0.2);padding:2px 8px;border-radius:8px;">3개월 +67% · PBR 1.8배</span>
+          </div>
+          <div style="font-size:13px;color:#4a1a1a;line-height:1.75;">
+            47,300원 → 79,000원대(2026.03 기준). 일본 상사 대비 여전히 할인이지만, 단기 급등에 따른 조정 리스크가 있어요. 천연가스·CPO 가격이 동시에 하락하면 실적 민감도가 높은 구조예요.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 기업 프로필 -->
+    <div class="company-profile-box">
+      <div class="profile-grid">
+        <div class="profile-row">
+          <span class="profile-label">설립일</span>
+          <span class="profile-value">2000년 <span style="color:#7a9ab0;font-size:12px;">· 대우 무역부문 인적분할 설립. 2010년 포스코그룹 편입. 2019년 '포스코인터내셔널'로 사명 변경</span></span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">상장일</span>
+          <span class="profile-value">KOSPI 상장 <span style="color:#7a9ab0;font-size:12px;">· 종목코드 047050</span></span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">대표이사</span>
+          <span class="profile-value">이계인 사장 <span style="color:#7a9ab0;font-size:12px;">· 2024년 취임, 2025년 12월 연임 확정 · 전 글로벌사업부문장</span></span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">본사</span>
+          <span class="profile-value">서울특별시 강남구 테헤란로 440 (대치동, 포스코센터) <span style="color:#7a9ab0;font-size:12px;">· 2024년 10월 등기 변경 · 실무 거점: 인천 송도 포스코타워</span></span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-label">최대주주</span>
+          <span class="profile-value">POSCO홀딩스 <span style="color:#7a9ab0;font-size:12px;">· 약 62.9% (2023년 포스코에너지 합병 직후 70.7% → 현재)</span></span>
+        </div>
+      </div>
+      <div class="profile-divider"></div>
+      <div>
+        <div style="margin-bottom:16px;">
+          <div class="profile-biz-title">종속회사 현황</div>
+          <div style="font-size:13px;color:#5a7a9a;line-height:1.9;margin-bottom:10px;">
+            총 <strong style="color:#a05810;">44개사</strong> (국내 4개 · 해외 40개) · 해외 네트워크 <strong style="color:#a05810;">130여 개</strong>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
+            <span style="background:rgba(200,100,20,0.08);border:1px solid rgba(200,100,20,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#8a4a00;">🇦🇺 Senex Energy</span>
+            <span style="background:rgba(200,100,20,0.08);border:1px solid rgba(200,100,20,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#8a4a00;">🇮🇩 PT Prime Agri Resources</span>
+            <span style="background:rgba(200,100,20,0.08);border:1px solid rgba(200,100,20,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#8a4a00;">🇮🇩 PT BIO INTI AGRINDO</span>
+            <span style="background:rgba(40,100,180,0.08);border:1px solid rgba(40,100,180,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#2a5a9a;">🇺🇸 POSCO INT'L AMERICA</span>
+            <span style="background:rgba(40,100,180,0.08);border:1px solid rgba(40,100,180,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#2a5a9a;">🇺🇸 ALASKA ENERGY LLC</span>
+            <span style="background:rgba(40,100,180,0.08);border:1px solid rgba(40,100,180,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#2a5a9a;">🇲🇽 POSCO INT'L MEXICO</span>
+            <span style="background:rgba(40,100,180,0.08);border:1px solid rgba(40,100,180,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#2a5a9a;">🇩🇪 Deutschland GmbH</span>
+            <span style="background:rgba(40,100,180,0.08);border:1px solid rgba(40,100,180,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#2a5a9a;">🇯🇵 JAPAN CORP</span>
+            <span style="background:rgba(40,100,180,0.08);border:1px solid rgba(40,100,180,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#2a5a9a;">🇸🇬 SINGAPORE PTE</span>
+            <span style="background:rgba(40,100,180,0.08);border:1px solid rgba(40,100,180,0.18);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#2a5a9a;">🇨🇳 SHANGHAI CO.</span>
+          </div>
+        </div>
+        <div class="profile-divider"></div>
+        <div class="profile-biz-title">주요사업 구조</div>
+        <div class="profile-biz-items">
+          <div class="profile-biz-item">
+            <span class="biz-dot" style="background:#c06a10;"></span>
+            <div><strong style="color:#2a6ab0;">에너지 (OP 비중 54%)</strong> — 가스전 E&P(미얀마·호주 세넥스), LNG 터미널(광양·당진), 발전(인천LNG), LNG 트레이딩<br><span style="font-size:11px;color:#8a9ab0;">거점: 🇲🇲 미얀마 · 🇦🇺 호주 · 🇲🇾 말레이시아 · 🇮🇩 인도네시아(신규탐사) · 🇺🇸 미국(알래스카)</span></div>
+          </div>
+          <div class="profile-biz-item">
+            <span class="biz-dot" style="background:#5a9a70;"></span>
+            <div><strong style="color:#2a6a40;">소재·트레이딩 (OP 비중 46%)</strong> — 철강 트레이딩, 구동모터코어(EV·HEV), 식량(팜·곡물), 희토류 밸류체인 구축 중<br><span style="font-size:11px;color:#8a9ab0;">거점: 🇵🇱 폴란드 · 🇲🇽 멕시코 · 🇮🇩 인도네시아 · 🇺🇿 우즈베키스탄 · 🇨🇳 중국 · 🇺🇦 우크라이나</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-snap" style="animation:fadeDown 0.7s 0.1s ease both;">
+    <div class="kpi">
+      <div class="kpi-label">2025 매출 (확정)</div>
+      <div class="kpi-value">32.4조</div>
+      <div class="kpi-delta up">↑ YoY +0.1%</div>
+      <div class="kpi-note">32조 3,736억<br>DART 잠정공시 2026.01.29</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">2025 영업이익 (확정)</div>
+      <div class="kpi-value">1조 1,653억</div>
+      <div class="kpi-delta up">↑ YoY +4.3%</div>
+      <div class="kpi-note">사상 최대 · 3년 연속 1조 클럽<br>에너지 54% / 소재 46%</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">2026E 영업이익</div>
+      <div class="kpi-value">1.3조원</div>
+      <div class="kpi-delta up">↑ YoY +11%↑</div>
+      <div class="kpi-note">FnGuide 컨센서스<br>세넥스 완전 반영 시 1.4조 가능</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">증권사 목표주가</div>
+      <div class="kpi-value">70,000~97,000</div>
+      <div class="kpi-note">유안타 97,000(BUY·최고·최신)<br>IBK 88,000 · 하나 76,000 · KB 73,000</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">2025 순이익</div>
+      <div class="kpi-value">6,368억</div>
+      <div class="kpi-delta up">↑ YoY +26.5%</div>
+      <div class="kpi-note">수익성 개선 뚜렷<br>순차입금비율 62.8%</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">주당 배당금 (DPS)</div>
+      <div class="kpi-value">1,550원</div>
+      <div class="kpi-note">2024년 결산 · 7년 최고치<br>배당수익률 약 2~3%<br>5년 배당성장률 +28%</div>
+    </div>
+  </div>
+
+  <!-- 한줄 개요 -->
+  <div class="overview-box" style="animation:fadeDown 0.7s 0.15s ease both;">
+    포스코인터내셔널은 단순 무역상사를 넘어 <strong>에너지·자원·식량을 아우르는 종합사업회사</strong>로 변모하고 있어요.
+    미얀마 가스전(A-1·A-3광구)은 <strong>PNG 파이프라인으로 중국·미얀마에 직공급</strong>하고, 호주 세넥스는 <strong>호주 내수 장기계약</strong>으로 판매해요.
+    광양 LNG 터미널은 글로벌 시장(미국·카타르·호주 등)에서 조달한 LNG를 저장·발전·판매하는 <strong>미드~다운스트림 핵심 인프라</strong>로,
+    업스트림 현금흐름과 결합해 <strong>E&amp;P → 트레이딩 → 터미널 → 발전으로 이어지는 LNG 밸류체인</strong>을 국내 유일하게 보유하고 있어요.
+    2025년 영업이익 1조 1,653억으로 <strong>사상 최대 실적</strong>을 기록했고,
+    2026년엔 세넥스 추가 증산·팜 사업 3배 확대로 다시 한 번 증익이 예상돼요.
+    탈중국 희토류 공급망 구축과 미국 LNG 장기계약도 중장기 모멘텀이에요.
+    단, <strong>미얀마 정치 리스크와 단기 주가 급등에 따른 밸류에이션 부담</strong>은 늘 염두에 두어야 해요.
+  </div>
+
+  <!-- LNG 밸류체인 -->
+  <div class="section" style="animation-delay:0.18s;">
+    <div class="section-title">LNG 밸류체인 포지션</div>
+    <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.08);border-radius:14px;padding:18px 20px;">
+      <div class="vc-flow">
+        <div class="vc-node highlight"><div class="vc-node-icon">⛏️</div><div>가스전<br>E&P</div></div>
+        <div class="vc-sep">›</div>
+        <div class="vc-node highlight"><div class="vc-node-icon">🚢</div><div>LNG<br>트레이딩</div></div>
+        <div class="vc-sep">›</div>
+        <div class="vc-node highlight"><div class="vc-node-icon">🏭</div><div>LNG<br>터미널</div></div>
+        <div class="vc-sep">›</div>
+        <div class="vc-node highlight"><div class="vc-node-icon">⚡</div><div>가스<br>발전</div></div>
+        <div class="vc-sep">›</div>
+        <div class="vc-node"><div class="vc-node-icon">🏙️</div><div>최종<br>소비자</div></div>
+      </div>
+      <div class="vc-caption">
+        포스코인터내셔널은 LNG <strong>업스트림(탐사·생산)부터 미드스트림(저장·터미널), 다운스트림(발전)까지 전 과정을 직접 운영</strong>해요.
+        국내 민간 기업 중 이 밸류체인을 모두 보유한 곳은 포스코인터내셔널이 유일해요.
+        2026년 <span class="tip" data-tip="광양 제2LNG터미널의 추가 탱크 2기(7호·8호). 현재 6기(93만KL) 운영 중 → 2026년 말 완공 시 8기(133만KL)로 저장용량 43% 확대. 국내 최초 민간 LNG 수입터미널이에요.">광양 2LNG 터미널 7·8호기</span> 완공으로 밸류체인이 완성돼요.
+      </div>
+    </div>
+  </div>
+
+  <!-- 사업 세그먼트 — 재구조화 -->
+  <div class="section" style="animation-delay:0.22s;">
+    <div class="section-title">⚙️ 사업 세그먼트 구조</div>
+
+    <!-- 읽는 법 안내 -->
+    <div style="font-size:12px;color:#7a6040;background:rgba(200,120,40,0.05);border:1px solid rgba(200,120,40,0.12);border-radius:10px;padding:10px 14px;margin-bottom:18px;line-height:1.75;">
+      💡 DART 공시는 '트레이딩/에너지' 2분류지만, 투자 관점에서는 <strong>에너지 · 식량 · 소재·모빌리티 · 철강 트레이딩</strong> 4축으로 나눠봐야 정확해요.
+      세 가지를 동시에 봐야 해요: <strong>① 지금 돈 버는 곳</strong> · <strong>② 빠르게 크는 곳</strong> · <strong>③ 구조 전환 중인 곳</strong>
+    </div>
+
+    <!-- 탭 버튼 -->
+    <div style="display:flex;gap:6px;margin-bottom:18px;">
+      <button id="tab-map" onclick="switchSegTab('map')" style="font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;border:1px solid #c06a10;background:rgba(200,100,20,0.1);color:#8a4a00;cursor:pointer;transition:all 0.2s;">🗺 사업 구조도</button>
+      <button id="tab-profit" onclick="switchSegTab('profit')" style="font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;border:1px solid rgba(0,60,120,0.12);background:rgba(255,255,255,0.55);color:#5a7a9a;cursor:pointer;transition:all 0.2s;backdrop-filter:blur(6px);">💰 이익 구조</button>
+    </div>
+
+    <!-- ══ 이익 구조 탭 ══ -->
+    <div id="seg-profit" style="display:none;">
+      <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.4);border-radius:16px;padding:20px 22px;backdrop-filter:blur(8px);">
+        <div style="font-size:11px;font-weight:700;color:#b06010;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;">2025년 영업이익 1조 1,653억 — 어디서 벌었나</div>
+
+        <!-- 막대 차트 -->
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <!-- 미얀마 -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;color:#3a5a7a;width:130px;text-align:right;flex-shrink:0;line-height:1.4;">🇲🇲 미얀마 가스전<div style="font-size:10px;color:#8a9ab0;">E&P 업스트림</div></div>
+            <div style="flex:1;height:14px;background:rgba(0,40,100,0.06);border-radius:7px;overflow:hidden;"><div style="width:33.7%;height:100%;background:#c06a10;border-radius:7px;"></div></div>
+            <div style="font-size:12px;font-weight:800;color:#c06a10;width:38px;flex-shrink:0;">33.7%</div>
+          </div>
+          <!-- LNG 터미널+트레이딩 -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;color:#3a5a7a;width:130px;text-align:right;flex-shrink:0;line-height:1.4;">🏭 LNG 터미널·트레이딩<div style="font-size:10px;color:#8a9ab0;">미드스트림</div></div>
+            <div style="flex:1;height:14px;background:rgba(0,40,100,0.06);border-radius:7px;overflow:hidden;"><div style="width:14.8%;height:100%;background:#e09030;border-radius:7px;"></div></div>
+            <div style="font-size:12px;font-weight:800;color:#e09030;width:38px;flex-shrink:0;">14.8%</div>
+          </div>
+          <!-- 세넥스 -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;color:#3a5a7a;width:130px;text-align:right;flex-shrink:0;line-height:1.4;">🇦🇺 세넥스 에너지<div style="font-size:10px;color:#8a9ab0;">E&P · +90%↑</div></div>
+            <div style="flex:1;height:14px;background:rgba(0,40,100,0.06);border-radius:7px;overflow:hidden;"><div style="width:8.4%;height:100%;background:#f0b050;border-radius:7px;"></div></div>
+            <div style="font-size:12px;font-weight:800;color:#d09030;width:38px;flex-shrink:0;">8.4%</div>
+          </div>
+          <!-- 발전 -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;color:#3a5a7a;width:130px;text-align:right;flex-shrink:0;line-height:1.4;">⚡ 인천 LNG 발전<div style="font-size:10px;color:#c07070;">SMP 하락 압박</div></div>
+            <div style="flex:1;height:14px;background:rgba(0,40,100,0.06);border-radius:7px;overflow:hidden;"><div style="width:9.8%;height:100%;background:#f0c060;border-radius:7px;"></div></div>
+            <div style="font-size:12px;font-weight:800;color:#c09030;width:38px;flex-shrink:0;">9.8%</div>
+          </div>
+          <!-- 식량 -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;color:#3a5a7a;width:130px;text-align:right;flex-shrink:0;line-height:1.4;">🌾 식량 (팜·곡물)<div style="font-size:10px;color:#2a8a50;">2026 3배↑ 예정</div></div>
+            <div style="flex:1;height:14px;background:rgba(0,40,100,0.06);border-radius:7px;overflow:hidden;"><div style="width:8.7%;height:100%;background:#3a9a50;border-radius:7px;"></div></div>
+            <div style="font-size:12px;font-weight:800;color:#2a8a50;width:38px;flex-shrink:0;">8.7%</div>
+          </div>
+          <!-- 소재·모빌리티 -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;color:#3a5a7a;width:130px;text-align:right;flex-shrink:0;line-height:1.4;">🔋 소재·모빌리티<div style="font-size:10px;color:#2a5ab0;">흑자전환 완료</div></div>
+            <div style="flex:1;height:14px;background:rgba(0,40,100,0.06);border-radius:7px;overflow:hidden;"><div style="width:6.5%;height:100%;background:#4a7adf;border-radius:7px;"></div></div>
+            <div style="font-size:12px;font-weight:800;color:#3a6adf;width:38px;flex-shrink:0;">6.5%</div>
+          </div>
+          <!-- 철강 트레이딩 -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;color:#3a5a7a;width:130px;text-align:right;flex-shrink:0;line-height:1.4;">🌐 철강 트레이딩<div style="font-size:10px;color:#8a9ab0;">매출 70% · 저마진</div></div>
+            <div style="flex:1;height:14px;background:rgba(0,40,100,0.06);border-radius:7px;overflow:hidden;"><div style="width:16%;height:100%;background:#8a8aaa;border-radius:7px;"></div></div>
+            <div style="font-size:12px;font-weight:800;color:#7a7a9a;width:38px;flex-shrink:0;">16.0%</div>
+          </div>
+          <!-- 기타 -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="font-size:11px;color:#3a5a7a;width:130px;text-align:right;flex-shrink:0;line-height:1.4;">기타</div>
+            <div style="flex:1;height:14px;background:rgba(0,40,100,0.06);border-radius:7px;overflow:hidden;"><div style="width:10.5%;height:100%;background:#aaaacc;border-radius:7px;"></div></div>
+            <div style="font-size:12px;font-weight:800;color:#9a9abb;width:38px;flex-shrink:0;">10.5%</div>
+          </div>
+        </div>
+
+        <!-- 인사이트 박스 -->
+        <div style="margin-top:16px;padding:10px 14px;background:rgba(200,100,20,0.06);border-radius:8px;font-size:12px;color:#6a4a20;line-height:1.8;border-left:2px solid #c06a10;">
+          📌 <strong>핵심 인사이트:</strong> 미얀마+세넥스 두 자산만으로 전체 이익의 <strong>약 42%</strong>를 책임져요.
+          에너지 부문 합계 OP 비중이 54%인 이유예요. 식량은 아직 8%대지만 2026년 팜 판매량 3배 확대로 급성장 예정.
+          철강 트레이딩은 <strong>매출은 전체의 70%</strong>지만 이익 기여는 상대적으로 낮은 구조적 과제를 안고 있어요.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 사업 구조도 탭 ══ -->
+    <div id="seg-map">
+
+      <!-- 전략 지형도 2×2 -->
+      <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.1);border-radius:14px;padding:16px 18px;margin-bottom:14px;backdrop-filter:blur(8px);">
+        <div style="font-size:11px;font-weight:700;color:#5a7a9a;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">사업 성격 × 이익 기여 — 전략 지형도</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:rgba(200,100,20,0.08);border:1px solid rgba(200,100,20,0.2);border-radius:10px;padding:11px 13px;">
+            <div style="font-size:9px;font-weight:700;color:#c06a10;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">현재 이익 기둥</div>
+            <div style="font-size:15px;font-weight:900;color:#1a2a3a;margin-bottom:2px;">⚡ 에너지</div>
+            <div style="font-size:11px;color:#c06a10;font-weight:700;">OP 6,266억 · 54%</div>
+          </div>
+          <div style="background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:10px;padding:11px 13px;">
+            <div style="font-size:9px;font-weight:700;color:#1a7040;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">빠른 성장</div>
+            <div style="font-size:15px;font-weight:900;color:#1a2a3a;margin-bottom:2px;">🌾 식량</div>
+            <div style="font-size:11px;color:#1a7040;font-weight:700;">OP 1,010억 · +23%</div>
+          </div>
+          <div style="background:rgba(40,100,200,0.08);border:1px solid rgba(40,100,200,0.2);border-radius:10px;padding:11px 13px;">
+            <div style="font-size:9px;font-weight:700;color:#2a5ab0;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">미래 성장축</div>
+            <div style="font-size:13px;font-weight:900;color:#1a2a3a;margin-bottom:2px;white-space:nowrap;">🔋 소재·모빌리티</div>
+            <div style="font-size:11px;color:#2a5ab0;font-weight:700;">흑자전환 완료 · 수주 확보</div>
+          </div>
+          <div style="background:rgba(100,100,140,0.07);border:1px solid rgba(100,100,140,0.2);border-radius:10px;padding:11px 13px;">
+            <div style="font-size:9px;font-weight:700;color:#5a5a7a;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">구조 전환 중</div>
+            <div style="font-size:13px;font-weight:900;color:#1a2a3a;margin-bottom:2px;white-space:nowrap;">🌐 철강 트레이딩</div>
+            <div style="font-size:11px;color:#5a5a7a;font-weight:700;">매출 최대 · 저마진 개선 과제</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- ① 에너지 — 레이어별 구조 -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="seg" style="border-color:rgba(200,100,20,0.15);margin-bottom:12px;">
+        <!-- 헤더 (클릭 영역) -->
+        <div onclick="toggleSeg('energy')" style="cursor:pointer;user-select:none;">
+          <div class="seg-top" style="margin-bottom:0;">
+            <div class="seg-left">
+              <div class="seg-icon">⚡</div>
+              <div class="seg-meta">
+                <div class="seg-name" style="color:#8a4a00;">① 에너지 — Full Value Chain</div>
+                <div class="seg-products">"땅에서 캐서 전기까지 직접 판다" · 가스전 E&P → LNG 저장 → 발전 → CCS</div>
+              </div>
+            </div>
+            <div class="seg-right">
+              <span style="background:rgba(200,100,20,0.12);border:1px solid rgba(200,100,20,0.3);color:#8a4a00;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;">핵심 수익 기둥</span>
+              <span style="background:rgba(200,100,20,0.07);border:1px solid rgba(200,100,20,0.15);color:#b06010;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;">OP 비중 54%</span>
+              <span id="arr-energy" style="font-size:16px;color:#c06a10;margin-top:4px;">▼</span>
+            </div>
+          </div>
+          <!-- 한줄 구조 요약 -->
+          <div style="font-size:12px;color:#5a3a10;background:rgba(200,100,20,0.06);border-left:2px solid rgba(200,100,20,0.3);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:10px;line-height:1.65;">
+            <strong style="color:#8a4a00;">사업 구조:</strong> 가스전에서 캐낸 천연가스를 → 터미널에 저장하고 → 발전소에서 전기로 파는 전 과정을 직접 운영. 각 단계 마진을 모두 독점하는 구조예요.
+          </div>
+        </div>
+
+        <!-- 펼침 영역 -->
+        <div id="detail-energy" style="display:none;margin-top:14px;border-top:1px solid rgba(200,100,20,0.12);padding-top:14px;">
+
+          <!-- ══════════════════════════════════════════ -->
+          <!-- 📍 글로벌 E&P 거점 전략지도 (SVG 인라인)    -->
+          <!-- ══════════════════════════════════════════ -->
+          <div style="background:rgba(255,255,255,0.38);border:1px solid rgba(20,90,180,0.13);border-radius:12px;overflow:hidden;margin-bottom:18px;backdrop-filter:blur(6px);">
+            <div style="padding:10px 16px 6px;display:flex;align-items:center;gap:8px;">
+              <span style="font-size:10px;font-weight:700;color:#1a5a9a;letter-spacing:1.2px;text-transform:uppercase;">📍 글로벌 E&amp;P 거점 전략지도</span>
+              <span style="margin-left:auto;font-size:10px;color:#6a9aba;font-weight:500;">생산 2개소 · 탐사·추진 3개소 · 터미널 1개소</span>
+            </div>
+            <svg viewBox="0 0 800 430" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+              <defs>
+                <linearGradient id="emOcean" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#bcd8f0"/>
+                  <stop offset="55%" stop-color="#8bbedd"/>
+                  <stop offset="100%" stop-color="#65a8ce"/>
+                </linearGradient>
+                <radialGradient id="emCaustic" cx="28%" cy="22%" r="55%">
+                  <stop offset="0%" stop-color="rgba(255,255,215,0.11)"/>
+                  <stop offset="100%" stop-color="transparent"/>
+                </radialGradient>
+                <style>
+                  .em-fl{stroke-dasharray:7 4;animation:em-flow 2.1s linear infinite;}
+                  @keyframes em-flow{to{stroke-dashoffset:-33;}}
+                  .em-pu{animation:em-puls 2.8s ease-in-out infinite;}
+                  @keyframes em-puls{0%,100%{opacity:.32;}50%{opacity:.09;}}
+                  .em-pu2{animation:em-puls 3.4s ease-in-out infinite;}
+                </style>
+                <filter id="em-ls" x="-8%" y="-8%" width="120%" height="120%">
+                  <feDropShadow dx="1" dy="2" stdDeviation="2.2" flood-color="rgba(0,35,80,.13)"/>
+                </filter>
+              </defs>
+
+              <!-- ── Ocean ── -->
+              <rect width="800" height="430" fill="url(#emOcean)"/>
+              <rect width="800" height="430" fill="url(#emCaustic)"/>
+              <!-- wave shimmer lines -->
+              <path d="M0,72 Q200,64 400,72 Q600,80 800,72"  stroke="rgba(255,255,255,.13)" stroke-width=".8" fill="none"/>
+              <path d="M0,155 Q200,147 400,155 Q600,163 800,155" stroke="rgba(255,255,255,.09)" stroke-width=".8" fill="none"/>
+              <path d="M0,248 Q200,240 400,248 Q600,256 800,248" stroke="rgba(255,255,255,.07)" stroke-width=".8" fill="none"/>
+              <path d="M0,338 Q200,330 400,338 Q600,346 800,338" stroke="rgba(255,255,255,.05)" stroke-width=".8" fill="none"/>
+
+              <!-- ── LANDMASSES (warm cream-sand) ── -->
+
+              <!-- China (simplified background mass) -->
+              <path d="M20,40 L168,25 L292,30 L368,53 L392,78 L386,96
+                       L352,102 L308,98 L242,118 L212,128 L184,138
+                       L152,135 L118,118 L72,105 L32,90 Z"
+                    fill="#cfbf9e" filter="url(#em-ls)" stroke="#baaa88" stroke-width=".5"/>
+              <!-- China-south fringe blending into Indochina -->
+              <path d="M242,118 L308,98 L352,102 L384,95 L374,108
+                       L348,113 L282,112 L238,120 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+
+              <!-- Indochina Peninsula (Myanmar · Thailand · Vietnam · Cambodia) -->
+              <path d="M108,127 L178,134 L234,153 L248,170 L234,204
+                       L200,239 L193,252 L187,262 L184,264
+                       L188,252 L194,239 L160,222 L128,178 Z"
+                    fill="#cfbf9e" filter="url(#em-ls)" stroke="#baaa88" stroke-width=".5"/>
+              <!-- Malay Peninsula (thin finger south) -->
+              <path d="M184,264 L193,252 L197,263 L192,281 L186,281 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+
+              <!-- Sumatra -->
+              <path d="M128,226 L209,225 L218,274 L142,268 Z"
+                    fill="#cfbf9e" filter="url(#em-ls)" stroke="#baaa88" stroke-width=".5"/>
+              <!-- Borneo -->
+              <path d="M231,217 L312,217 L298,265 L231,265 Z"
+                    fill="#cfbf9e" filter="url(#em-ls)" stroke="#baaa88" stroke-width=".5"/>
+              <!-- Java (thin E-W strip) -->
+              <path d="M210,274 L280,282 L286,293 L218,291 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+              <!-- Sulawesi (simplified) -->
+              <path d="M318,239 L358,237 L350,265 L326,268 L315,258 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+              <!-- Philippines (Luzon + Mindanao) -->
+              <path d="M318,163 L340,160 L342,196 L311,200 L306,184 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+              <path d="M323,210 L350,210 L354,232 L323,230 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+              <!-- New Guinea -->
+              <path d="M395,256 L463,265 L521,274 L514,291 L470,288 L395,280 Z"
+                    fill="#cfbf9e" filter="url(#em-ls)" stroke="#baaa88" stroke-width=".5"/>
+
+              <!-- Korean Peninsula -->
+              <path d="M352,80 L394,80 L395,96 L378,102 L352,96 Z"
+                    fill="#cfbf9e" filter="url(#em-ls)" stroke="#baaa88" stroke-width=".5"/>
+              <!-- Japan (Honshu + Hokkaido area) -->
+              <path d="M400,88 L442,73 L462,81 L454,95 L420,101 L400,97 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+              <path d="M460,60 L494,52 L502,63 L490,73 L462,71 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+              <!-- Taiwan -->
+              <path d="M393,127 L402,125 L404,141 L395,143 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+
+              <!-- Australia ★ (most important — recognizable outline) -->
+              <path d="M268,342 L300,311 L390,298 L434,290 L434,299
+                       L478,290 L492,299 L512,317 L557,354 L556,378
+                       L544,408 L462,413 L268,400 Z"
+                    fill="#cfbf9e" filter="url(#em-ls)" stroke="#baaa88" stroke-width=".5"/>
+              <!-- Tasmania -->
+              <rect x="517" y="415" width="13" height="9" rx="2"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+
+              <!-- ── ALASKA INSET (top-right corner) ── -->
+              <rect x="618" y="11" width="172" height="76" rx="7"
+                    fill="rgba(150,198,226,.80)" stroke="rgba(40,100,180,.22)" stroke-width="1"/>
+              <text x="704" y="27" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="9" font-weight="700" fill="#1a4888">🇺🇸 알래스카 LNG</text>
+              <path d="M630,54 L663,41 L702,37 L743,48 L765,61 L755,72 L702,76 L656,69 Z"
+                    fill="#cfbf9e" stroke="#baaa88" stroke-width=".5"/>
+              <text x="704" y="84" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="8" fill="#1a4888">SPA 체결 추진 중</text>
+              <!-- dotted arrow: Alaska inset → Korea pin -->
+              <path d="M617,54 Q555,62 398,96"
+                    stroke="#3a6ab0" stroke-width="1.2" stroke-dasharray="5,4" fill="none" opacity=".48"/>
+
+              <!-- ── FLOW LINES (실제 공급 경로) ── -->
+              <!-- Myanmar → China (PNG 파이프라인: 북동방향) -->
+              <path d="M137,174 Q185,148 242,118"
+                    class="em-fl" stroke="#6a3a80" stroke-width="1.8" fill="none" opacity=".72"/>
+              <!-- 화살촉 (중국 방향) -->
+              <polygon points="242,118 234,112 238,122" fill="#6a3a80" opacity=".82"/>
+              <!-- 중국 도착 라벨 -->
+              <rect x="246" y="98" width="88" height="28" rx="4"
+                    fill="rgba(80,30,110,.85)" stroke="rgba(180,130,220,.3)" stroke-width="1"/>
+              <text x="290" y="109" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="8.5" font-weight="700" fill="white">🇨🇳 중국 CNPC</text>
+              <text x="290" y="120" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="7.5" fill="rgba(220,190,255,.9)">PNG 장기계약 공급</text>
+              <!-- Myanmar → Myanmar domestic (짧은 내수 루프) -->
+              <path d="M137,174 Q118,180 112,172 Q118,162 137,168"
+                    stroke="#6a3a80" stroke-width="1.2" stroke-dasharray="4,3" fill="none" opacity=".5"/>
+              <!-- Australia → domestic (호주 내수, 서→동 짧은 화살) -->
+              <path d="M525,354 Q505,350 486,358"
+                    stroke="#2878c0" stroke-width="1.5" stroke-dasharray="5,3" fill="none" opacity=".6"/>
+              <!-- Global LNG → Gwangyang (글로벌 조달, 우측 상단에서 진입 표시) -->
+              <path d="M580,200 Q500,160 396,99"
+                    class="em-fl" stroke="#16a04e" stroke-width="1.6" fill="none" opacity=".62"/>
+              <!-- Global source label area -->
+              <rect x="586" y="170" width="98" height="26" rx="4"
+                    fill="rgba(8,88,42,.78)" stroke="rgba(100,220,150,.22)" stroke-width="1"/>
+              <text x="635" y="180" text-anchor="middle" font-family="'Noto Sans KR',sans-serif"
+                    font-size="7.5" font-weight="700" fill="white">글로벌 LNG 조달</text>
+              <text x="635" y="190" text-anchor="middle" font-family="'Noto Sans KR',sans-serif"
+                    font-size="7" fill="rgba(170,255,208,.88)">미국·카타르·호주 등</text>
+
+              <!-- ── PINS ── -->
+
+              <!-- ① 광양 LNG 터미널 — Korea — GREEN (destination) -->
+              <circle cx="374" cy="97" r="13" fill="rgba(18,155,68,.22)" class="em-pu"/>
+              <circle cx="374" cy="97" r="7"  fill="#16a04e" stroke="white" stroke-width="2"/>
+              <!-- label box -->
+              <rect x="304" y="109" width="140" height="38" rx="5"
+                    fill="rgba(8,88,42,.90)" stroke="rgba(100,220,150,.2)" stroke-width="1"/>
+              <text x="374" y="121" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="9" font-weight="700" fill="white">🇰🇷 광양 LNG 터미널</text>
+              <text x="374" y="132" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="7.5" fill="rgba(170,255,208,.88)">다운스트림 · 2LNG 7·8호기 증설 중</text>
+              <text x="374" y="142" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="7" fill="rgba(130,220,175,.78)">→ 2026 하반기 완공 (공정률 80%+)</text>
+
+              <!-- ② 미얀마 가스전 — ORANGE (production) -->
+              <circle cx="137" cy="174" r="13" fill="rgba(210,68,10,.22)" class="em-pu"/>
+              <circle cx="137" cy="174" r="7"  fill="#c24810" stroke="white" stroke-width="2"/>
+              <rect x="75" y="186" width="132" height="46" rx="5"
+                    fill="rgba(125,42,8,.92)" stroke="rgba(255,160,80,.2)" stroke-width="1"/>
+              <text x="141" y="198" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="9" font-weight="700" fill="white">🇲🇲 미얀마 가스전</text>
+              <text x="141" y="209" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="7.5" fill="rgba(255,210,170,.90)">OP 3,924억 · A-1·A-3광구</text>
+              <text x="141" y="219" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="7.5" fill="rgba(255,210,170,.88)">PNG → 중국·미얀마 직공급 (LNG화 ✕)</text>
+              <text x="141" y="229" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="7" fill="rgba(255,170,130,.82)">⚠️ 군부정치 리스크 집중 모니터링</text>
+
+              <!-- ③ 세넥스 에너지 — ORANGE (production) -->
+              <circle cx="525" cy="354" r="12" fill="rgba(210,68,10,.22)" class="em-pu"/>
+              <circle cx="525" cy="354" r="7"  fill="#c24810" stroke="white" stroke-width="2"/>
+              <rect x="456" y="366" width="142" height="36" rx="5"
+                    fill="rgba(125,42,8,.92)" stroke="rgba(255,160,80,.2)" stroke-width="1"/>
+              <text x="527" y="378" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="9" font-weight="700" fill="white">🇦🇺 세넥스 에너지 (QLD)</text>
+              <text x="527" y="389" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="7.5" fill="rgba(255,210,170,.90)">OP 750억 (+90%) · 60PJ 증산 완료</text>
+              <text x="527" y="399" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="7" fill="rgba(200,240,210,.78)">호주 내수 장기공급 (광양 도입은 미래 검토)</text>
+
+              <!-- ④ 말레이시아 신규탐사 — BLUE (exploration) -->
+              <circle cx="224" cy="222" r="8" fill="rgba(30,95,200,.22)" class="em-pu2"/>
+              <circle cx="224" cy="222" r="5" fill="#2878c0" stroke="white" stroke-width="1.5"/>
+              <rect x="228" y="205" width="120" height="19" rx="4"
+                    fill="rgba(14,65,152,.87)"/>
+              <text x="288" y="218" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="8.5" font-weight="700" fill="white">🇲🇾 말레이시아 신규탐사</text>
+
+              <!-- ⑤ 인도네시아 신규탐사 — BLUE (exploration) -->
+              <circle cx="280" cy="268" r="8" fill="rgba(30,95,200,.22)" class="em-pu2"/>
+              <circle cx="280" cy="268" r="5" fill="#2878c0" stroke="white" stroke-width="1.5"/>
+              <rect x="285" y="270" width="120" height="19" rx="4"
+                    fill="rgba(14,65,152,.87)"/>
+              <text x="345" y="283" text-anchor="middle"
+                    font-family="'Noto Sans KR',sans-serif" font-size="8.5" font-weight="700" fill="white">🇮🇩 인도네시아 신규탐사</text>
+
+              <!-- ── LEGEND (bottom-left) ── -->
+              <rect x="10" y="358" width="205" height="66" rx="6"
+                    fill="rgba(6,20,50,.65)" stroke="rgba(78,138,210,.28)" stroke-width="1"/>
+              <circle cx="30" cy="372" r="5.5" fill="#c24810" stroke="white" stroke-width="1"/>
+              <text x="43" y="376" font-family="'Noto Sans KR',sans-serif" font-size="9" fill="white">생산 가동 중 (E&amp;P)</text>
+              <circle cx="30" cy="388" r="5.5" fill="#2878c0" stroke="white" stroke-width="1"/>
+              <text x="43" y="392" font-family="'Noto Sans KR',sans-serif" font-size="9" fill="white">신규 탐사 · 추진 중</text>
+              <circle cx="30" cy="404" r="5.5" fill="#16a04e" stroke="white" stroke-width="1"/>
+              <text x="43" y="408" font-family="'Noto Sans KR',sans-serif" font-size="9" fill="white">LNG 터미널 (글로벌 조달)</text>
+              <!-- flow arrow legend -->
+              <line x1="130" y1="372" x2="160" y2="372" stroke="#6a3a80" stroke-width="1.6" stroke-dasharray="5,3"/>
+              <text x="163" y="376" font-family="'Noto Sans KR',sans-serif" font-size="7.5" fill="rgba(200,165,230,.9)">PNG → 중국 직공급</text>
+              <line x1="130" y1="388" x2="160" y2="388" stroke="#16a04e" stroke-width="1.6" stroke-dasharray="5,3"/>
+              <text x="163" y="392" font-family="'Noto Sans KR',sans-serif" font-size="7.5" fill="rgba(170,255,208,.9)">글로벌 LNG 조달</text>
+
+            </svg>
+          </div>
+
+          <!-- 합병 의미 강조 배너 -->
+          <div style="background:linear-gradient(135deg,rgba(200,100,20,0.07),rgba(40,130,200,0.05));border:1px solid rgba(200,100,20,0.18);border-radius:10px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:18px;">🔗</span>
+            <div style="font-size:12px;color:#5a3a10;line-height:1.7;">
+              <strong style="color:#a05010;">2023년 포스코에너지 합병</strong>으로 완성 — 에너지 탐사(포스코인터내셔널)와 발전(포스코에너지)이 하나가 된 <strong style="color:#a05010;">국내 유일의 완전 통합 LNG 밸류체인</strong>이에요.
+            </div>
+          </div>
+
+          <!-- 레이어 ① 업스트림 -->
+          <div style="font-size:13px;font-weight:700;color:#8a4a00;background:rgba(200,100,20,0.07);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">⛏️ ① 업스트림 — "에너지의 씨앗을 캐내다" · 가스전 E&P</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;margin-bottom:1px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🇲🇲 미얀마 가스전 <span class="tip" data-tip="안다만해 A-1·A-3 광구 해상 가스전. 연 ~1,745억cf 생산.&#10;&#10;⚠️ 공급 경로 중요: 가스는 PNG(파이프라인)로&#10;중국·미얀마 현지에 직접 판매돼요.&#10;LNG로 액화해 광양으로 오는 게 아니에요.&#10;광양 터미널엔 글로벌 시장 조달 물량이 저장돼요.&#10;&#10;4단계 개발 공정률 32% 진행 중.">(경로 확인↗)</span></span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ OP 3,924억 · 전사 34%</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">안다만해 A-1·A-3 광구 · 연 ~1,745억cf 생산 · <strong style="color:#5a5a9a;">PNG → 중국·미얀마 직공급</strong> (LNG화 없음)</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">중국 CNPC와 장기 배관 공급계약. 판매 안정성은 높지만 전사 이익의 34%를 이 한 곳에 의존하는 집중 리스크가 있어요.</div>
+              <div style="font-size:12px;color:#8a3030;margin-top:6px;background:rgba(180,50,50,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">⚠️ 군부 정치 리스크 + 미중 갈등 심화 시 중국향 공급 계약 이행 리스크 — 두 리스크 동시 현실화 시 타격이 매우 큼</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:10px;padding:13px 15px;margin-top:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🇦🇺 세넥스 에너지 <span class="tip" data-tip="2022년 약 3,700억원에 인수한 호주 퀸즐랜드 육상 가스전 운영사. 지분 50.1%.&#10;&#10;현재: 증산 공사 완료, 호주 동부 내수 장기계약&#10;미래: 증산분 LNG화→국내 도입 검토 중&#10;&#10;파이프라인 내수공급이라 해상 봉쇄·선박 리스크 없음.">(현재·미래↗)</span></span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ OP 750억 (+90%)</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">호주 퀸즐랜드 육상 가스전 · 지분 50.1% · 60PJ 증산 체제 완료 · <strong style="color:#2a6a40;">현재: 호주 내수 장기공급</strong></div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">2022년 3,700억 인수. CS에너지 등 호주 발전사 장기계약. <strong style="color:#2a6a40;">미래 옵션:</strong> 증산분 일부를 LNG화해 국내 반입 검토 중 — 실현 시 업스트림 수익이 국내 밸류체인과 연결.</div>
+              <div style="font-size:12px;color:#2a7a40;margin-top:6px;background:rgba(30,130,60,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">✅ 파이프라인 내수 공급 · 정치 리스크 없음 · 미얀마 리스크 분산 역할</div>
+            </div>
+          </div>
+
+          <!-- 레이어 ② 미드스트림 -->
+          <div style="font-size:13px;font-weight:700;color:#1a5a9a;background:rgba(40,100,200,0.06);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">🏗️ ② 미드스트림 — "에너지의 창고를 짓다" · LNG 저장·트레이딩</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;margin-bottom:1px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🏭 광양 LNG 터미널 <span class="tip" data-tip="2024년 7월 제1터미널(탱크 6기, 93만KL) 종합 준공.&#10;현재 제2터미널(탱크 7·8호기) 추가 건설 중.&#10;&#10;저장 물량: 미얀마·호주 가스가 아닌&#10;글로벌 시장(미국·카타르·호주 등) 조달 LNG.&#10;&#10;용도: 포스코 인천·광양 발전소 연료 공급 +&#10;S-OIL·SK E&S 등 제3자 임대 + 트레이딩 판매.">(구조 확인↗)</span></span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 2026년 말 133만KL</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;"><strong style="color:#1a4a9a;">🏆 국내 최대 민간 LNG 터미널</strong> · 제1터미널 6기(93만KL) 2024년 7월 종합 준공 · 제2터미널(7·8호기) 증설 중</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">2026년 하반기 완공 시 저장용량 43% 확대(93만→133만KL). 터미널을 보유한 기업은 LNG 가격 급등기에 미리 저장해둔 물량을 비싸게 팔 수 있는 <strong style="color:#1a4a9a;">'에너지 창고 프리미엄'</strong>을 가져요.</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:10px;padding:13px 15px;margin-top:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🚢 LNG 트레이딩</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 미국 연 110만톤 장기계약</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">싱가포르 트레이딩 전문 법인 설립 · 2025년 LNG 전용선 최초 도입</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">미국 셰니에르·멕시코퍼시픽과 장기계약으로 안정적 물량 확보. 알래스카 LNG SPA 체결 추진 중.</div>
+              <div style="font-size:12px;color:#8a3030;margin-top:6px;background:rgba(180,50,50,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">⚠️ LNG 국제 시황 하락 시 트레이딩 마진 축소 가능</div>
+            </div>
+          </div>
+
+          <!-- 레이어 ③ 다운스트림 -->
+          <div style="font-size:13px;font-weight:700;color:#2a6a40;background:rgba(40,130,70,0.06);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">⚡ ③ 다운스트림 — "에너지를 빛으로 바꾸다" · LNG 발전</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;margin-bottom:1px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">⚡ 인천 LNG 발전소</span>
+                <span style="font-size:12px;font-weight:800;color:#b03030;background:rgba(180,50,50,0.08);border:1px solid rgba(180,50,50,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↓ OP 1,140억 (-33%)</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">복합발전 7기 운영 · 설비용량 3,412MW · 2023년 포스코에너지 합병으로 편입</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">
+                터미널에서 받은 LNG로 전기를 만들어 한국전력에 판매. 2025년 광양 집단에너지 사업 허가 취득으로 밸류체인 확장 기반 마련.<br>
+                <strong style="color:#1a6a40;">🔬 미래 전환:</strong> 2027~2028년 <strong style="color:#1a6a40;">수소 혼소 발전</strong> 실증 추진 예정. LNG에 수소를 섞어 태우는 방식으로 탄소 배출을 단계적으로 감축해요.
+              </div>
+              <div style="font-size:12px;color:#8a3030;margin-top:6px;background:rgba(180,50,50,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">⚠️ 전력 도매가격(SMP) 하락 + 이용률 저하로 수익성 압박 지속. 전기 가격을 포스코인터가 마음대로 정할 수 없는 구조</div>
+            </div>
+          </div>
+
+          <!-- 레이어 ④ 미래 신사업 -->
+          <div style="font-size:13px;font-weight:700;color:#4a2a90;background:rgba(80,50,180,0.05);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">🌱 ④ 미래 신사업 — "탄소를 지우고 수소를 더하다" · CCS &amp; 수소</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;margin-bottom:1px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🌿 CCS — 고갈 가스전의 2막</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 중장기 밸류 옵션</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">가스를 다 판 구멍에 이번엔 <strong style="color:#4a2a90;">탄소를 집어넣는</strong> 구조. 기존 가스전 인프라를 재활용하므로 탐사·굴착 비용이 거의 들지 않아요.</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">호주·동남아 고갈 가스전을 CO₂ 저장소로 재활용 추진. 세넥스·페트로나스와 협력. 미국 텍사스 광권 확보. 탄소 규제 강화될수록 이 사업의 가치가 올라가요.</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:10px;padding:13px 15px;margin-top:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">💧 수소 혼소 발전</span>
+                <span style="font-size:12px;font-weight:800;color:#2a5ab0;background:rgba(40,100,200,0.08);border:1px solid rgba(40,100,200,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">2027~2028년 실증 예정</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">인천 LNG 발전소에서 LNG + 수소를 혼합 연소하는 방식. 기존 발전 인프라를 크게 바꾸지 않고도 탄소 배출을 줄일 수 있는 현실적인 전환 경로예요.</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">혼소율이 높아질수록 탄소 감축 → LNG 발전소의 "친환경 자산 전환" 가능. 발전 업계 전반의 트렌드와 일치.</div>
+            </div>
+          </div>
+
+          <!-- 2026 전망 -->
+          <div style="background:rgba(200,100,20,0.07);border:1px solid rgba(200,100,20,0.18);border-radius:10px;padding:10px 14px;font-size:12px;color:#3a2a10;line-height:1.75;">
+            <strong style="color:#c06a10;">📅 2026년 전망:</strong> 세넥스 60PJ 증산 완전 반영 + 광양 제2터미널 완공(133만KL) → 에너지 OP 추가 확대. 알래스카 LNG SPA 체결 시 북미 포트폴리오 완성. 수소 혼소·CCS는 중장기 밸류에이션 리레이팅 촉매
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- ② 소재·모빌리티 -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="seg" style="border-color:rgba(40,100,200,0.15);margin-bottom:12px;">
+        <div onclick="toggleSeg('mobility')" style="cursor:pointer;user-select:none;">
+          <div class="seg-top" style="margin-bottom:0;">
+            <div class="seg-left">
+              <div class="seg-icon">🔋</div>
+              <div class="seg-meta">
+                <div class="seg-name" style="color:#1a4a90;">② 소재·모빌리티 — Global Supply Chain</div>
+                <div class="seg-products">"친환경차 핵심부품을 직접 만든다" · 구동모터코어 제조 + 희토류 탈중국 SCM + 이차전지 소재</div>
+              </div>
+            </div>
+            <div class="seg-right">
+              <span style="background:rgba(40,100,200,0.1);border:1px solid rgba(40,100,200,0.25);color:#2a5aaa;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;">미래 성장축</span>
+              <span style="background:rgba(40,100,200,0.06);border:1px solid rgba(40,100,200,0.15);color:#3a6aaa;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;">흑자전환 완</span>
+              <span id="arr-mobility" style="font-size:16px;color:#2a5ab0;margin-top:4px;">▼</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#1a2a4a;background:rgba(40,100,200,0.05);border-left:2px solid rgba(40,100,200,0.3);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:10px;line-height:1.65;">
+            <strong style="color:#2a5ab0;">사업 구조:</strong> EV·HEV 핵심부품(구동모터코어)을 직접 제조하고, 중국에 의존하던 희토류를 독자 공급망으로 대체하는 구조예요. 지정학 리스크가 오히려 경쟁 우위가 돼요.
+          </div>
+        </div>
+
+        <div id="detail-mobility" style="display:none;margin-top:14px;border-top:1px solid rgba(40,100,200,0.12);padding-top:14px;">
+
+          <!-- 구동모터코어 -->
+          <div style="font-size:13px;font-weight:700;color:#1a4a90;background:rgba(40,100,200,0.07);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">① 구동모터코어 — 직접 제조</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;margin-bottom:1px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🏭 4개국 글로벌 공장 <span class="tip" data-tip="전기차·하이브리드차 모터 내부의 철심 부품. 포스코 전기강판을 얇게 쌓아 만든 원통형 코어. 양산 인증 후 공급처 교체가 어려워 장기 거래 구조를 만들어요.">(구동모터코어?)</span></span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ OP 192억 (흑자전환)</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">한국·폴란드(120만대)·멕시코·인도 · 2026년 216만→287만대</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">2025년 연간 흑자전환 성공. 2030년 750만대 · 시장점유율 10% 목표. 2033년까지 3,500만대 수주 확보</div>
+              <div style="font-size:12px;color:#8a3030;margin-top:6px;background:rgba(180,50,50,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">⚠️ EV 시장 회복 지연 시 수주 목표 달성 지연 가능성</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:10px;padding:13px 15px;margin-top:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🚗 북미 완성차 장기공급</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 9,000억원 공급계약</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;line-height:1.7;">2026~2031년 9,000억원 북미 완성차 장기계약 체결. 공급처 교체 어려워 안정적 매출 기반</div>
+            </div>
+          </div>
+
+          <!-- 희토류 -->
+          <div style="font-size:13px;font-weight:700;color:#4a2a90;background:rgba(80,50,180,0.05);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">② 희토류 — 탈중국 독자 SCM</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;margin-bottom:1px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🧲 희토류 영구자석</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 2,600억원 공급계약</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">비중국 25개사 협력 · 광산→영구자석 독자 밸류체인 구축 중</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">유럽 완성차 2025~2034년 2,600억원 공급계약. 중국 세계 생산 80% 장악 → 대체 불가능한 위치</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:10px;padding:13px 15px;margin-top:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🇺🇸 미국 분리정제 합작 (ReElement)</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 지정학 안보 자산</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;line-height:1.7;">MOU 체결 · 미국 내 현지 생산단지 구축. 미·유럽 탈중국 정책의 핵심 수혜</div>
+            </div>
+          </div>
+
+          <!-- 이차전지 -->
+          <div style="font-size:13px;font-weight:700;color:#2a5a80;background:rgba(40,90,140,0.05);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">③ 이차전지 소재 — 그룹 시너지</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">⛏️ 탄자니아 흑연광산</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 중장기 옵션</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;line-height:1.7;">세계 2위 규모 · 2025년 개발 착수. 포스코퓨처엠 그룹 배터리 밸류체인 내 조달·영업 역할</div>
+            </div>
+          </div>
+
+          <div style="background:rgba(40,100,200,0.06);border:1px solid rgba(40,100,200,0.16);border-radius:10px;padding:10px 14px;font-size:13px;color:#1a2a4a;line-height:1.8;">
+            <strong style="color:#2a5ab0;">📅 2026년 전망:</strong> 멕시코·폴란드 공장 램프업 완료 → 물량 검증 국면 진입. 희토류 공급계약 추가 확대 기대
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- ③ 식량 -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="seg" style="border-color:rgba(30,130,60,0.15);margin-bottom:12px;">
+        <div onclick="toggleSeg('food')" style="cursor:pointer;user-select:none;">
+          <div class="seg-top" style="margin-bottom:0;">
+            <div class="seg-left">
+              <div class="seg-icon">🌾</div>
+              <div class="seg-meta">
+                <div class="seg-name" style="color:#1a6030;">③ 식량 — Agri-Biz</div>
+                <div class="seg-products">"해외에서 직접 길러 우리 창고에 보관하고 전 세계에 판다" · 팜유 수직계열화 + 흑해·미주 곡물 밸류체인</div>
+              </div>
+            </div>
+            <div class="seg-right">
+              <span style="background:rgba(30,130,60,0.1);border:1px solid rgba(30,130,60,0.25);color:#1a6030;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;">2026 퀀텀점프</span>
+              <span style="background:rgba(30,130,60,0.06);border:1px solid rgba(30,130,60,0.15);color:#2a7040;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;">OP 1,010억↑</span>
+              <span id="arr-food" style="font-size:16px;color:#1a7040;margin-top:4px;">▼</span>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#1a3a20;background:rgba(30,130,60,0.05);border-left:2px solid rgba(30,130,60,0.3);border-radius:0 8px 8px 0;padding:10px 14px;margin-top:10px;line-height:1.75;">
+            <strong style="color:#1a7040;">사업 구조:</strong> 에너지가 "가스전→터미널→발전"이라면, 식량은 <strong style="color:#1a7040;">"농장→터미널→트레이딩"</strong> 구조예요. 인도네시아에서 팜유를 직접 생산·정제하고, 우크라이나 흑해 곡물 터미널에서 보관·수출해요. 단순 중개를 넘어 <strong style="color:#1a7040;">글로벌 식량 공급망을 직접 보유</strong>하려는 전략이에요.
+          </div>
+        </div>
+
+        <div id="detail-food" style="display:none;margin-top:14px;border-top:1px solid rgba(30,130,60,0.12);padding-top:14px;">
+
+          <!-- 3단계 구조 요약 -->
+          <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:4px;background:rgba(30,130,60,0.04);border:1px solid rgba(30,130,60,0.12);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+            <div style="text-align:center;">
+              <div style="font-size:18px;margin-bottom:3px;">🌱</div>
+              <div style="font-size:11px;font-weight:700;color:#1a6030;letter-spacing:0.5px;">① 생산·조달</div>
+              <div style="font-size:11px;color:#4a8a60;margin-top:2px;line-height:1.5;">인도네시아 팜 농장<br>우크라·미주 곡물 매입</div>
+            </div>
+            <div style="font-size:16px;color:#1a9040;opacity:0.5;">›</div>
+            <div style="text-align:center;">
+              <div style="font-size:18px;margin-bottom:3px;">🏭</div>
+              <div style="font-size:11px;font-weight:700;color:#1a6030;letter-spacing:0.5px;">② 정제·가공</div>
+              <div style="font-size:11px;color:#4a8a60;margin-top:2px;line-height:1.5;">PT.ARC 정제공장<br>흑해 곡물 수출 터미널</div>
+            </div>
+            <div style="font-size:16px;color:#1a9040;opacity:0.5;">›</div>
+            <div style="text-align:center;">
+              <div style="font-size:18px;margin-bottom:3px;">🚢</div>
+              <div style="font-size:11px;font-weight:700;color:#1a6030;letter-spacing:0.5px;">③ 물류·트레이딩</div>
+              <div style="font-size:11px;color:#4a8a60;margin-top:2px;line-height:1.5;">글로벌 네트워크<br>130개 거점 활용</div>
+            </div>
+            <div style="font-size:16px;color:#1a9040;opacity:0.5;">›</div>
+            <div style="text-align:center;">
+              <div style="font-size:18px;margin-bottom:3px;">🌍</div>
+              <div style="font-size:11px;font-weight:700;color:#1a6030;letter-spacing:0.5px;">④ 판매</div>
+              <div style="font-size:11px;color:#4a8a60;margin-top:2px;line-height:1.5;">한국 반입 + 제3국<br>(인도·유럽 등) 재판매</div>
+            </div>
+          </div>
+
+          <!-- ① 팜유 -->
+          <div style="font-size:13px;font-weight:700;color:#1a6030;background:rgba(30,130,60,0.07);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">① 팜유 (CPO) — 알짜 수익원, 수직계열화 완성 단계</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+
+            <!-- PT.BIA -->
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 0 0;padding:13px 15px;margin-bottom:1px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">
+                  🌴 <span class="tip" data-tip="PT. Bio Inti Agrindo&#10;포스코인터내셔널이 2011년 인도네시아 파푸아주에 직접 설립한 팜 농장 법인.&#10;서울 면적 약 60% 규모 (3.4만 헥타르).&#10;2016년 상업생산, 2018년 흑자전환.&#10;연평균 영업이익률 36%의 알짜 핵심 농장.&#10;데이터·기술 기반 정밀농업이 강점이에요.">PT.BIA</span>
+                  — 직영 팜 농장
+                </span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">연 21만톤 생산</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">인도네시아 파푸아주 머라우케 · 3.4만 헥타르 · 착유공장 3기 운영 · 연평균 영업이익률 36%</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">황무지에 도로·학교·병원까지 직접 지어 만든 농장. 데이터·기술 기반 정밀농업으로 단위 생산성을 높이고 있어요.</div>
+            </div>
+
+            <!-- PT.PAR -->
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 0 0;padding:13px 15px;margin-bottom:1px;border-top:1px dashed rgba(0,100,60,0.1);">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">
+                  🌴 <span class="tip" data-tip="PT. Prime Agri Resources (구 삼푸르나 아그로 Tbk)&#10;인도네시아 현지 상장 팜 기업.&#10;2025년 포스코인터내셔널이 약 1조 3천억원에 인수.&#10;수마트라·칼리만탄·파푸아 3개 권역, 12.8만 헥타르.&#10;직원 9,747명 규모 — 인적 관리·운영 역량이 강점.&#10;PT.BIA와 합산 총 15만 헥타르(서울 면적 2.5배)">PT.PAR</span>
+                  — 신규 인수 대형 농장 (2026.02 완료)
+                </span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 19만→55만톤 (3배)</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">구 삼푸르나 아그로 · 수마트라·칼리만탄·파푸아 3개 권역 · 12.8만 헥타르 · 직원 9,747명</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">현지 상장사를 통째로 인수해 규모를 단숨에 3배 이상 키웠어요. PT.BIA의 정밀농업 기술 + PT.PAR의 대규모 인력 운영이 결합돼요.</div>
+            </div>
+
+            <!-- PT.ARC -->
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;border-top:1px dashed rgba(0,100,60,0.1);">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">
+                  ⚗️ <span class="tip" data-tip="PT. AGPA Refinery Complex&#10;포스코인터내셔널(60%)·GS칼텍스(40%) 공동 설립 정제 법인.&#10;위치: 인도네시아 동칼리만탄 발릭파판.&#10;2025년 11월 준공 · 연 50만톤 정제 능력.&#10;(국내 연간 팜 정제유 수입량의 80% 수준)&#10;농장 CPO → 정제유로 가공 → 한국·중국 등 수출.&#10;GS칼텍스는 한국 바이오디젤 원료로 활용 예정.">PT.ARC</span>
+                  — 팜유 정제공장 (GS칼텍스 공동 투자)
+                </span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">연 50만톤 정제</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">동칼리만탄 발릭파판 · 2025년 11월 준공 · 포스코인터 60% + GS칼텍스 40% · 총 투자 약 3,000억원</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">CPO(원유) 상태로 팔던 것을 정제유로 가공해 판매 → <strong style="color:#1a6030;">마진 내재화</strong>. 국내 연간 팜 정제유 수입량의 80%를 여기서 충당할 수 있는 규모예요. GS칼텍스는 바이오디젤 원료로 한국에 공급 예정.</div>
+              <div style="font-size:12px;color:#2a7a40;margin-top:6px;background:rgba(30,130,60,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">✅ 농장(BIA+PAR) → 정제(ARC) → 글로벌 판매 — 팜유 풀 밸류체인 완성</div>
+            </div>
+          </div>
+
+          <!-- ② 곡물 -->
+          <div style="font-size:13px;font-weight:700;color:#2a6a50;background:rgba(40,120,80,0.05);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">② 글로벌 곡물 트레이딩 — 흑해 거점 + 미주 확장</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+
+            <!-- 우크라이나 -->
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;margin-bottom:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🇺🇦 우크라이나 미콜라이우 곡물 터미널 <span class="tip" data-tip="흑해 연안 미콜라이우에 위치한 곡물 전용 수출 터미널. 한국 기업 중 유일. 거대한 곡물 창고로, 농가로부터 수매한 밀·옥수수를 저장 후 선박으로 전 세계에 수출해요.">(터미널이란?)</span></span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 2030년 1,000만톤</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;"><strong style="color:#1a6030;">국내 기업 중 유일한 흑해 곡물 수출 터미널 보유.</strong> 우크라이나 현지 농가로부터 밀·옥수수를 직접 매입, 터미널에서 보관 후 선적·수출해요.</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">전쟁 중에도 터미널을 가동해 일부 물량을 출하하며 <strong style="color:#1a6030;">국가 식량 안보 자산</strong>으로 주목받았어요. 전쟁 종료 시 물동량 급증 기대감이 있어요.</div>
+              <div style="font-size:12px;color:#8a3030;margin-top:6px;background:rgba(180,50,50,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">⚠️ 러-우 전쟁 장기화 시 터미널 운영 차질 · 흑해 항로 봉쇄 리스크</div>
+            </div>
+
+            <!-- 미국 바틀렛 -->
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:10px;padding:13px 15px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🇺🇸 미주 곡물 조달 — 바틀렛앤컴퍼니 협력</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 연 400만톤 협약</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">우크라이나 전쟁 이후 공급선 다변화 전략. 2024년부터 미국 중견 곡물기업 <strong style="color:#1a6030;">바틀렛앤컴퍼니(Bartlett Grain)</strong>와 2027년까지 연 400만톤 거래 협약 체결.</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">흑해 의존도를 낮추고 북미 조달 체계 구축 중. 옥수수·밀·대두 · 국내 반입량 218만→236만톤. GAFTA·FOSFA 국내 유일 회원사 자격 보유.</div>
+              <div style="font-size:12px;color:#2a7a40;margin-top:6px;background:rgba(30,130,60,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">✅ 흑해(우크라이나) + 미주(바틀렛)의 이중 조달망 → 리스크 분산 효과</div>
+            </div>
+          </div>
+
+          <!-- 전략적 의미 박스 -->
+          <div style="background:rgba(30,130,60,0.06);border:1px solid rgba(30,130,60,0.18);border-radius:10px;padding:14px 16px;margin-bottom:12px;">
+            <div style="font-size:11px;font-weight:700;color:#1a6030;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">💡 왜 이 사업을 하나요?</div>
+            <div style="font-size:13px;color:#1a3a20;line-height:1.8;">
+              한국은 쌀을 제외한 대부분의 곡물(밀·옥수수 등)을 수입에 의존해요. 포스코인터내셔널의 목표는 <strong style="color:#1a7040;">글로벌 식량 메이저(카길 같은 회사)</strong>들 사이에서 한국 독자적인 식량 공급망을 만드는 것이에요.<br>
+              에너지에서 "가스전-터미널-발전소"를 연결했듯, 식량에서도 <strong style="color:#1a7040;">"농장(BIA+PAR) → 정제(ARC) → 전 세계 판매"</strong>를 하나로 묶어 수익을 내는 구조예요.
+            </div>
+          </div>
+
+          <div style="background:rgba(180,50,50,0.04);border:1px solid rgba(180,50,50,0.12);border-radius:10px;padding:10px 14px;font-size:12px;color:#5a2020;line-height:1.8;margin-bottom:10px;">
+            ⚠️ CPO 국제가격 하락 시 이익 민감도 높음 · 인도네시아 수출세 정책 변동 리스크
+          </div>
+
+          <div style="background:rgba(100,100,140,0.06);border:1px solid rgba(100,100,140,0.16);border-radius:10px;padding:10px 14px;font-size:13px;color:#3a3a5a;line-height:1.8;">
+            <strong style="color:#5a5a7a;">📅 2026년 전망:</strong> PT.PAR 인수 효과 본격 반영 → CPO 판매량 19만→55만톤 (3배) + PT.ARC 정제공장 가동으로 마진 내재화 → 식량부문 OP 급증 예상. 전쟁 종료 시 우크라이나 터미널 물동량 회복은 별도 추가 모멘텀이에요.
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════ -->
+      <!-- ④ 철강 트레이딩 -->
+      <!-- ═══════════════════════════════════════ -->
+      <div class="seg" style="border-color:rgba(100,100,120,0.15);margin-bottom:12px;">
+        <div onclick="toggleSeg('trading')" style="cursor:pointer;user-select:none;">
+          <div class="seg-top" style="margin-bottom:0;">
+            <div class="seg-left">
+              <div class="seg-icon">🌐</div>
+              <div class="seg-meta">
+                <div class="seg-name" style="color:#4a4a6a;">④ 철강 트레이딩 — Steel &amp; Global Biz</div>
+                <div class="seg-products">"130개 글로벌 네트워크의 뿌리" · 철강 유통 + 친환경 강재 + 프로젝트 오거나이징</div>
+              </div>
+            </div>
+            <div class="seg-right">
+              <span style="background:rgba(100,100,120,0.08);border:1px solid rgba(100,100,120,0.2);color:#5a5a7a;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;">매출 볼륨 최대</span>
+              <span style="background:rgba(100,100,120,0.05);border:1px solid rgba(100,100,120,0.14);color:#6a6a8a;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;white-space:nowrap;">저마진 구조</span>
+              <span id="arr-trading" style="font-size:16px;color:#5a5a7a;margin-top:4px;">▼</span>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#3a3a5a;background:rgba(100,100,140,0.05);border-left:2px solid rgba(100,100,140,0.25);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:10px;line-height:1.65;">
+            <strong style="color:#5a5a7a;">사업 구조:</strong> 매출은 가장 크지만 이익 기여는 상대적으로 낮아요. 130개 글로벌 네트워크를 에너지·식량 사업 확장의 인프라로 활용하는 게 핵심 전략 역할이에요.
+          </div>
+        </div>
+
+        <div id="detail-trading" style="display:none;margin-top:14px;border-top:1px solid rgba(100,100,120,0.1);padding-top:14px;">
+
+          <!-- 철강 트레이딩 -->
+          <div style="font-size:13px;font-weight:700;color:#4a4a6a;background:rgba(80,80,120,0.06);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">① 철강 트레이딩 — 볼륨 기반</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;margin-bottom:1px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🏗️ 포스코 철강 유통</span>
+                <span style="font-size:12px;font-weight:800;color:#b03030;background:rgba(180,50,50,0.08);border:1px solid rgba(180,50,50,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↓ 마진 압박 지속</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">코일·후판·열연·냉연·특수강 · 전체 매출의 약 70% · 130개 글로벌 네트워크 유지 근간</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">포스코 및 글로벌 철강사 제품 유통. 해외 네트워크의 상업적 기반</div>
+              <div style="font-size:12px;color:#8a3030;margin-top:6px;background:rgba(180,50,50,0.05);border-radius:6px;padding:5px 10px;line-height:1.6;">⚠️ 중국 공급과잉 장기화 → 구조적 마진 축소. 볼륨 대비 OP 기여도 낮음</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:10px;padding:13px 15px;margin-top:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">♻️ 친환경 강재 (전환 중)</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 수익성 개선 열쇠</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">태양광·풍력·전기차용 고부가 친환경 철강</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">친환경차 전용 강판·신재생에너지 강재 비중 확대 → 단순 중개에서 가치 부가로 전환 시도</div>
+            </div>
+          </div>
+
+          <!-- 프로젝트 오거나이징 -->
+          <div style="font-size:13px;font-weight:700;color:#5a4a6a;background:rgba(90,70,120,0.05);border-radius:8px 8px 0 0;padding:8px 14px;letter-spacing:0.5px;">② 프로젝트 오거나이징 — 에너지 시너지</div>
+          <div style="padding-left:8px;margin-bottom:12px;">
+            <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,100,0.07);border-radius:0 0 10px 10px;padding:13px 15px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;flex-wrap:wrap;">
+                <span style="font-size:13px;font-weight:700;color:#1a2a3a;">🔧 플랜트·인프라 자재 조달</span>
+                <span style="font-size:12px;font-weight:800;color:#1a7a40;background:rgba(30,130,60,0.08);border:1px solid rgba(30,130,60,0.2);border-radius:8px;padding:2px 8px;white-space:nowrap;">↑ 에너지 사업 시너지</span>
+              </div>
+              <div style="font-size:13px;color:#5a7a9a;margin-bottom:6px;line-height:1.7;">해외 건설·에너지 프로젝트 자재 조달·유통 역할</div>
+              <div style="font-size:13px;color:#3a5a3a;line-height:1.7;border-left:2px solid rgba(0,100,60,0.15);padding-left:8px;">알래스카 LNG 파이프라인용 강관 공급 추진(2026년 착공 목표). 에너지·철강 사업 간 시너지 창출</div>
+            </div>
+          </div>
+
+          <div style="background:rgba(100,100,140,0.06);border:1px solid rgba(100,100,140,0.16);border-radius:10px;padding:10px 14px;font-size:13px;color:#3a3a5a;line-height:1.75;">
+            <strong style="color:#5a5a7a;">📅 2026년 전망:</strong> 철강 시황 부진 지속 예상. 친환경 강재 비중 확대 + 알래스카 프로젝트 강관 공급으로 부분 상쇄. 구조적 고부가가치 전환이 핵심 과제
+          </div>
+        </div>
+      </div>
+
+      <!-- 공통 전략 방향 요약 -->
+      <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(200,120,40,0.18);border-left:3px solid #c06a10;border-radius:0 14px 14px 0;padding:16px 18px;backdrop-filter:blur(8px);">
+        <div style="font-size:11px;font-weight:700;color:#b06010;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">💡 4축의 공통 전략 방향</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div style="display:flex;gap:10px;font-size:13px;color:#3a5a7a;line-height:1.75;"><span style="flex-shrink:0;">🔄</span><span>모든 사업이 <strong>'중개(트레이딩)'에서 '직접 생산·제조·보유'로 전환</strong> 중이에요. 이게 단순 상사와 다른 밸류에이션을 받아야 하는 근거예요.</span></div>
+          <div style="display:flex;gap:10px;font-size:13px;color:#3a5a7a;line-height:1.75;"><span style="flex-shrink:0;">🔗</span><span>에너지 ↔ 철강(알래스카 강관), 에너지 ↔ 소재(CCS), 식량 ↔ 트레이딩(곡물 네트워크) — <strong>사업 간 시너지</strong>가 뚜렷해요.</span></div>
+          <div style="display:flex;gap:10px;font-size:13px;color:#3a5a7a;line-height:1.75;"><span style="flex-shrink:0;">⚠️</span><span><strong>핵심 리스크:</strong> 에너지 OP 34%를 차지하는 미얀마 가스전의 정치·미중 리스크는 포트폴리오 전체 리스크예요.</span></div>
+        </div>
+      </div>
+
+    </div><!-- end seg-map -->
+
+    <div class="data-note" style="margin-top:10px;">📌 수치는 2025년 확정 실적 기준 · DART 공시 및 2026.01.29 컨퍼런스콜 자료</div>
+  </div>
+
+  <script>
+  function switchSegTab(tab) {
+    var mapEl = document.getElementById('seg-map');
+    var profitEl = document.getElementById('seg-profit');
+    var btnMap = document.getElementById('tab-map');
+    var btnProfit = document.getElementById('tab-profit');
+    if (tab === 'map') {
+      mapEl.style.display = 'block';
+      profitEl.style.display = 'none';
+      btnMap.style.background = 'rgba(200,100,20,0.1)';
+      btnMap.style.border = '1px solid #c06a10';
+      btnMap.style.color = '#8a4a00';
+      btnProfit.style.background = 'rgba(255,255,255,0.55)';
+      btnProfit.style.border = '1px solid rgba(0,60,120,0.12)';
+      btnProfit.style.color = '#5a7a9a';
+    } else {
+      mapEl.style.display = 'none';
+      profitEl.style.display = 'block';
+      btnProfit.style.background = 'rgba(200,100,20,0.1)';
+      btnProfit.style.border = '1px solid #c06a10';
+      btnProfit.style.color = '#8a4a00';
+      btnMap.style.background = 'rgba(255,255,255,0.55)';
+      btnMap.style.border = '1px solid rgba(0,60,120,0.12)';
+      btnMap.style.color = '#5a7a9a';
+    }
+  }
+  function toggleSeg(id) {
+    var el = document.getElementById('detail-' + id);
+    var arr = document.getElementById('arr-' + id);
+    if (!el) return;
+    if (el.style.display === 'none' || el.style.display === '') {
+      el.style.display = 'block';
+      if (arr) arr.textContent = '▲';
+    } else {
+      el.style.display = 'none';
+      if (arr) arr.textContent = '▼';
+    }
+  }
+  </script>
+
+  <!-- 주요 거점 -->
+  <div class="section" style="animation-delay:0.25s;">
+    <div class="section-title">🏭 주요 거점</div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:#5a7a9a;text-transform:uppercase;margin-bottom:10px;">🇰🇷 국내 거점</div>
+      <div class="factory-table-wrap" style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.08);border-radius:14px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:rgba(255,255,255,0.3);border-bottom:1px solid rgba(0,60,120,0.08);">
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#5a7a9a;">거점</th>
+              <th class="location-col" style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#5a7a9a;">위치</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#5a7a9a;">주요 기능</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(0,60,120,0.05);">
+              <td style="padding:12px 16px;font-weight:700;color:#2a6ab0;">광양 LNG 터미널</td>
+              <td class="location-col" style="padding:12px 16px;color:#5a7a9a;">전남 광양</td>
+              <td style="padding:12px 16px;color:#7a9ab8;line-height:1.6;">제1LNG 터미널(6기 93만KL) 운영 중 · <strong style="color:#16864a;">제2LNG터미널 7·8호기 증설 중(2026년 말 완공, 133만KL)</strong> · LNG 저장·기화·공급</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(0,60,120,0.05);">
+              <td style="padding:12px 16px;font-weight:700;color:#2a6ab0;">당진 LNG 터미널</td>
+              <td class="location-col" style="padding:12px 16px;color:#5a7a9a;">충남 당진</td>
+              <td style="padding:12px 16px;color:#5a7a9a;line-height:1.6;">LNG 수입 저장 터미널 운영 · 중부권 공급 거점</td>
+            </tr>
+            <tr>
+              <td style="padding:12px 16px;font-weight:700;color:#2a6ab0;">인천 LNG 발전소</td>
+              <td class="location-col" style="padding:12px 16px;color:#5a7a9a;">인천</td>
+              <td style="padding:12px 16px;color:#5a7a9a;line-height:1.6;">가스 복합 발전 7기 운영 · 포스코에너지 합병으로 편입 · SMP 하락으로 수익성 저하 중</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="factory-cards-wrap" style="display:none;flex-direction:column;gap:10px;">
+        <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);border-radius:14px;padding:16px;">
+          <div style="font-size:15px;font-weight:800;color:#2a6ab0;margin-bottom:5px;">광양 LNG 터미널</div>
+          <div style="font-size:11px;color:#7a9ab0;margin-bottom:6px;">📍 전남 광양</div>
+          <div style="font-size:13px;color:#7a9ab8;">1LNG 운영 · 2LNG 7·8호기 2026년 하반기 완공 예정</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);border-radius:14px;padding:16px;">
+          <div style="font-size:15px;font-weight:800;color:#2a6ab0;margin-bottom:5px;">인천 LNG 발전소</div>
+          <div style="font-size:11px;color:#7a9ab0;margin-bottom:6px;">📍 인천</div>
+          <div style="font-size:13px;color:#7a9ab8;">가스 복합 발전 7기 운영</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:#5a7a9a;text-transform:uppercase;margin-bottom:10px;">🌏 해외 핵심 자산</div>
+      <div class="overseas-table-wrap" style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.08);border-radius:14px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:rgba(255,255,255,0.3);border-bottom:1px solid rgba(0,60,120,0.08);">
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#5a7a9a;">자산</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#5a7a9a;">위치</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#5a7a9a;">내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(0,60,120,0.05);">
+              <td style="padding:12px 16px;font-weight:700;color:#2a6ab0;">🇲🇲 미얀마 가스전<br><span style="font-size:11px;font-weight:400;color:#7a9ab0;">(천연가스 · PNG 배관 공급)</span></td>
+              <td style="padding:12px 16px;color:#5a7a9a;">안다만해 A-1·A-3 광구</td>
+              <td style="padding:12px 16px;color:#5a7a9a;line-height:1.6;">해상 천연가스 생산. 연 ~1,700억cf. OP 3,924억(2025). 4단계 개발 공정률 32%. <span style="color:#e07070;">군부 정치 리스크 지속</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(0,60,120,0.05);">
+              <td style="padding:12px 16px;font-weight:700;color:#2a6ab0;">🇦🇺 세넥스에너지<br><span style="font-size:11px;font-weight:400;color:#7a9ab0;">(LNG용 천연가스)</span></td>
+              <td style="padding:12px 16px;color:#5a7a9a;">호주 퀸즐랜드</td>
+              <td style="padding:12px 16px;color:#5a7a9a;line-height:1.6;">지분 50.1% 보유. 육상 가스전. 3배 증산 체제 구축 완료. OP 750억(2025, YoY+90%). 2026년 추가 증산 예정.<br><span style="font-size:11px;color:#9aaa9a;display:block;margin-top:5px;line-height:1.6;">※ 2022년 약 3,700억원에 인수. 퀸즐랜드주에서 가스 생산, 파이프라인으로 공급해 해상 봉쇄 리스크 없음. 호주 동부 가스 수요 10% 점유 목표로 증산 중.</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(0,60,120,0.05);">
+              <td style="padding:12px 16px;font-weight:700;color:#2a6ab0;">🇮🇩 인도네시아 팜 농장<br><span style="font-size:11px;font-weight:400;color:#7a9ab0;">(팜유 CPO · 바이오연료 원료)</span></td>
+              <td style="padding:12px 16px;color:#5a7a9a;">인도네시아</td>
+              <td style="padding:12px 16px;color:#5a7a9a;line-height:1.6;">기존 팜 농장 + PT.PAR 신규 인수. CPO 판매량 19만→55만톤(3배) 확대 예정. OP 1,010억(2025)</td>
+            </tr>
+            <tr>
+              <td style="padding:12px 16px;font-weight:700;color:#6a30a0;">🇺🇸 미국 LNG·희토류</td>
+              <td style="padding:12px 16px;color:#5a7a9a;">미국 (계획)</td>
+              <td style="padding:12px 16px;color:#5a7a9a;line-height:1.6;">LNG 110만톤 장기계약 확보(셰니에르·멕시코퍼시픽). 알래스카 LNG 소수지분 투자 추진 중. 희토류 공급망 구축(25개사 협력 중)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="overseas-cards-wrap" style="display:none;flex-direction:column;gap:10px;">
+        <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);border-radius:14px;padding:16px;">
+          <div style="font-size:15px;font-weight:800;color:#2a6ab0;margin-bottom:3px;">🇲🇲 미얀마 가스전 <span style="font-size:11px;font-weight:400;color:#9ab0c0;">(천연가스)</span></div>
+          <div style="font-size:11px;color:#7a9ab0;margin-bottom:6px;">안다만해 A-1·A-3 광구</div>
+          <div style="font-size:13px;color:#7a9ab8;">OP 3,924억(2025) · 4단계 개발 공정률 32% · 군부 정치 리스크</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);border-radius:14px;padding:16px;">
+          <div style="font-size:15px;font-weight:800;color:#2a6ab0;margin-bottom:3px;">🇦🇺 세넥스에너지 <span style="font-size:11px;font-weight:400;color:#9ab0c0;">(LNG용 천연가스)</span></div>
+          <div style="font-size:11px;color:#7a9ab0;margin-bottom:6px;">호주 퀸즐랜드 · 지분 50.1% · 2022년 약 3,700억원 인수</div>
+          <div style="font-size:13px;color:#7a9ab8;">OP 750억(YoY+90%) · 3배 증산 · 호주 동부 가스 수요 10% 점유 목표</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);border-radius:14px;padding:16px;">
+          <div style="font-size:15px;font-weight:800;color:#2a6ab0;margin-bottom:3px;">🇮🇩 인도네시아 팜 농장 <span style="font-size:11px;font-weight:400;color:#9ab0c0;">(팜유 CPO)</span></div>
+          <div style="font-size:11px;color:#7a9ab0;margin-bottom:6px;">인도네시아</div>
+          <div style="font-size:13px;color:#7a9ab8;">CPO 19만→55만톤 · OP 1,010억(2025)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 핵심 재무 추이 -->
+  <div class="section" style="animation-delay:0.26s;">
+    <div class="section-title">📊 핵심 재무 추이 — 연결 기준 <span style="font-size:10px;font-weight:400;color:#7a9ab0;white-space:nowrap;">(단위: 억원)</span></div>
+    <div style="background:rgba(255,255,255,0.4);border:1px solid rgba(0,60,120,0.07);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead><tr>
+            <th style="text-align:left;white-space:nowrap;">항목</th>
+            <th style="white-space:nowrap;">2022</th>
+            <th style="white-space:nowrap;">2023</th>
+            <th style="white-space:nowrap;">2024</th>
+            <th style="background:rgba(200,120,40,0.08);color:#b06010;white-space:nowrap;">2025 확정</th>
+            <th style="background:rgba(200,120,40,0.08);color:#b06010;white-space:nowrap;">2026E</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td>매출액</td>
+              <td>297,920</td>
+              <td>328,100</td>
+              <td>323,408</td>
+              <td class="num-main" style="background:rgba(200,120,40,0.06);">323,736</td>
+              <td class="num-main" style="background:rgba(200,120,40,0.06);">~330,000</td>
+            </tr>
+            <tr>
+              <td>YoY</td>
+              <td class="num-good">+12%</td>
+              <td class="num-good">+10%</td>
+              <td style="color:#e06060;">-1.4%</td>
+              <td class="num-good" style="background:rgba(200,120,40,0.06);">+0.1%</td>
+              <td class="num-est" style="background:rgba(200,120,40,0.06);">+2%↑</td>
+            </tr>
+            <tr>
+              <td>영업이익</td>
+              <td>9,300</td>
+              <td>10,900</td>
+              <td>11,192</td>
+              <td class="num-main" style="background:rgba(200,120,40,0.06);">11,653</td>
+              <td class="num-main" style="background:rgba(200,120,40,0.06);">~13,000</td>
+            </tr>
+            <tr>
+              <td>YoY</td>
+              <td>—</td>
+              <td class="num-good">+17%</td>
+              <td class="num-good">+2.7%</td>
+              <td class="num-good" style="background:rgba(200,120,40,0.06);">+4.3%</td>
+              <td class="num-est" style="background:rgba(200,120,40,0.06);">+11%↑</td>
+            </tr>
+            <tr>
+              <td><span class="tip" data-tip="영업이익 ÷ 매출액 × 100. 포스코인터내셔널처럼 트레이딩 매출이 큰 기업은 OPM이 낮게 나와요. 실제 수익성은 EBITDA나 부문별 OP로 봐야 해요.">OPM</span></td>
+              <td>3.1%</td>
+              <td>3.3%</td>
+              <td>3.5%</td>
+              <td style="background:rgba(200,120,40,0.06);font-weight:700;color:#1a2a3a;">3.6%</td>
+              <td class="num-est" style="background:rgba(200,120,40,0.06);">~4%↑</td>
+            </tr>
+            <tr>
+              <td>순이익</td>
+              <td>6,800</td>
+              <td>5,800</td>
+              <td>5,034</td>
+              <td class="num-main" style="background:rgba(200,120,40,0.06);">6,368</td>
+              <td class="num-est" style="background:rgba(200,120,40,0.06);">추정 중</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="data-note">📌 2022~2024: DART 사업보고서. 2025: DART 잠정공시(2026.01.29). 2026E: FnGuide 컨센서스 (~1.3조원). <strong>매출 단위가 조 단위라 OPM이 낮게 보이지만, 실제 에너지 부문 마진은 높아요.</strong></div>
+  </div>
+
+  <!-- 밸류에이션 -->
+  <div class="section" style="animation-delay:0.30s;">
+    <div class="section-title" style="justify-content:space-between;">
+      <span>🔍 밸류에이션</span>
+      <button id="val-btn" onclick="window.open('https://finance.naver.com/item/coinfo.naver?code=047050&target=finsum_main','_blank')"
+        style="font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2a6ab0,#1a5a9a);border:none;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 8px rgba(30,80,160,0.25);">
+        📈 네이버 금융 확인
+      </button>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:12px;color:#6a8aa0;">기준일: 2026.04.17</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;">
+      <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.08);border-radius:14px;padding:16px 18px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#5a7a9a;margin-bottom:8px;">PER</div>
+        <div style="font-size:20px;font-weight:900;color:#1a2a3a;letter-spacing:-0.5px;">13~15배</div>
+        <div style="font-size:11px;color:#7a9ab0;margin-top:4px;">주가수익비율</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.08);border-radius:14px;padding:16px 18px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#5a7a9a;margin-bottom:8px;">PBR</div>
+        <div style="font-size:20px;font-weight:900;color:#1a2a3a;letter-spacing:-0.5px;">1.7~1.9배</div>
+        <div style="font-size:11px;color:#7a9ab0;margin-top:4px;">주가순자산비율</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.08);border-radius:14px;padding:16px 18px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#5a7a9a;margin-bottom:8px;">ROE</div>
+        <div style="font-size:20px;font-weight:900;color:#16864a;letter-spacing:-0.5px;">12~13%</div>
+        <div style="font-size:11px;color:#7a9ab0;margin-top:4px;">자기자본이익률</div>
+      </div>
+    </div>
+    <div class="data-note">📌 2026.04.17 기준 추정치. KB증권 목표가 산출 기준: P/B 1.8배, Sustainable ROE 13.2%. 일본 상사(미쓰비시·이토추) 대비 할인 구간이나, 주가 급등으로 간격 좁혀지는 중. 정확한 수치는 네이버 금융 확인.</div>
+  </div>
+
+  <!-- 시나리오 분석 -->
+  <div class="section" style="animation-delay:0.40s;">
+    <div class="section-title">🎯 시나리오 분석</div>
+    <div style="font-size:13px;color:#5a7a9a;margin-bottom:18px;line-height:1.7;">
+      포스코인터내셔널은 "에너지 가격과 자원 시황에 베팅하는 종목"이에요. 3년 연속 1조 클럽은 안정성을 증명했지만, 미얀마 리스크와 주가 급등이 동시에 존재해요.
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:250px;background:linear-gradient(135deg,rgba(63,207,136,0.07),rgba(255,255,255,0.03));border:1px solid rgba(63,207,136,0.22);border-radius:16px;padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <span style="font-size:20px;">🟢</span><span style="font-size:14px;font-weight:800;color:#0a6a2a;">긍정 시나리오</span>
+        </div>
+        <div style="font-size:13px;color:#7a9ab8;line-height:1.8;margin-bottom:14px;">
+          세넥스 추가 증산 예정대로. 광양 7·8호기 완공 및 LNG 트레이딩 확대. 희토류·미국 LNG 계약 본격화. CPO 시황 강세 지속. <strong style="color:#0a6a2a;">2026년 OP 1.4조원 돌파.</strong>
+        </div>
+        <div style="background:rgba(63,207,136,0.08);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:11px;color:#2a8a60;font-weight:700;margin-bottom:6px;">예상 주가 범위</div>
+          <div style="font-size:20px;font-weight:900;color:#0a6a2a;">90,000 ~ 110,000원</div>
+          <div style="font-size:11px;color:#3a8a68;margin-top:4px;">IBK 목표가 88,000 돌파 후 신고가</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:250px;background:linear-gradient(135deg,rgba(200,168,50,0.07),rgba(255,255,255,0.03));border:1px solid rgba(200,168,50,0.22);border-radius:16px;padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <span style="font-size:20px;">🟡</span><span style="font-size:14px;font-weight:800;color:#c8a832;">보수적 시나리오</span>
+        </div>
+        <div style="font-size:13px;color:#7a9ab8;line-height:1.8;margin-bottom:14px;">
+          에너지 가격 소폭 하락. 세넥스 증산 일정 지연. 철강 트레이딩 부진 지속. 발전 SMP 회복 더딤. <strong style="color:#c8a832;">2026년 OP 1.1~1.2조원 유지.</strong>
+        </div>
+        <div style="background:rgba(200,168,50,0.08);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:11px;color:#8a7020;font-weight:700;margin-bottom:6px;">예상 주가 범위</div>
+          <div style="font-size:20px;font-weight:900;color:#c8a832;">65,000 ~ 80,000원</div>
+          <div style="font-size:11px;color:#8a7840;margin-top:4px;">현재 주가(~65,000원) 수준 박스권</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:250px;background:linear-gradient(135deg,rgba(200,60,60,0.07),rgba(255,255,255,0.03));border:1px solid rgba(200,80,80,0.22);border-radius:16px;padding:20px 22px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <span style="font-size:20px;">🔴</span><span style="font-size:14px;font-weight:800;color:#e06060;">부정 시나리오</span>
+        </div>
+        <div style="font-size:13px;color:#7a9ab8;line-height:1.8;margin-bottom:14px;">
+          <strong style="color:#e06060;">미얀마 가스전 분쟁·국유화</strong> 발생. 에너지 가격 급락. 철강 시황 추가 악화. 원자재 하락으로 팜·LNG 마진 압박.
+        </div>
+        <div style="background:rgba(200,60,60,0.08);border-radius:10px;padding:12px 14px;">
+          <div style="font-size:11px;color:#8a3030;font-weight:700;margin-bottom:6px;">예상 주가 범위</div>
+          <div style="font-size:20px;font-weight:900;color:#e06060;">35,000 ~ 50,000원</div>
+          <div style="font-size:11px;color:#9a5050;margin-top:4px;">미얀마 리스크 현실화 시 급락 가능</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,60,120,0.08);border-radius:14px;padding:18px 22px;margin-top:18px;">
+      <div style="font-size:12px;font-weight:700;color:#5a7a9a;margin-bottom:10px;">💡 체크리스트</div>
+      <div style="font-size:13px;color:#3a5a7a;line-height:2.0;">
+        ✅ 광양 2LNG 터미널 7·8호기 공정률이 순조롭게 진행되고 있는가?<br>
+        ✅ 세넥스 에너지 분기 판매량이 예상대로 늘고 있는가?<br>
+        ✅ 희토류·미국 LNG 신규 계약 공시가 이어지고 있는가?<br>
+        ⚠️ 미얀마 정치 상황에 악화 신호가 포착되는가?<br>
+        ⚠️ 천연가스·CPO 국제 가격이 하락 추세로 전환되는가?<br>
+        ⚠️ 단기 주가 급등 후 외국인·기관 매도세가 강해지는가?<br>
+        ❌ 미얀마 가스전 계약 관련 분쟁·국유화 공시가 나오는가?
+      </div>
+    </div>
+    <div class="data-note" style="margin-top:14px;">📌 시나리오·주가 범위는 증권사 리포트 참고 추정치이며, 투자 권유가 아닙니다.</div>
+  </div>
+
+  <!-- 관련 기업 -->
+  <div class="section" style="animation-delay:0.48s;">
+    <div class="section-title">함께 볼 관련 기업</div>
+    <div class="related">
+      <a class="rel-chip" href="https://finance.naver.com/item/main.naver?code=005490" target="_blank">🏢 POSCO홀딩스 — 최대주주 (62.9%)</a>
+      <a class="rel-chip" href="https://finance.naver.com/item/main.naver?code=034020" target="_blank">⚙️ 포스코인터내셔널 — 포스코에너지 합병전신</a>
+      <a class="rel-chip" href="https://www.google.com/finance/quote/BE:NYSE" target="_blank">🇺🇸 블룸에너지 — 글로벌 연료전지·에너지 비교</a>
+      <a class="rel-chip" href="https://www.google.com/finance/quote/8058:TYO" target="_blank">🇯🇵 미쓰비시상사 — 일본 종합상사 밸류에이션 비교</a>
+    </div>
+  </div>
+
+  <!-- 증권사 리포트 -->
+  <div class="section" style="animation-delay:0.52s;">
+    <div class="section-title">📋 증권사 리포트</div>
+    <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.4);border-radius:14px;padding:20px;backdrop-filter:blur(6px);">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <a href="https://www.yuantakorea.com" target="_blank"
+           style="display:flex;align-items:baseline;gap:12px;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(0,60,120,0.05);">
+          <span style="font-size:10px;font-weight:700;color:white;flex-shrink:0;background:#c03030;padding:3px 8px;border-radius:6px;">최신</span>
+          <div style="flex:1;">
+            <span style="font-size:13px;color:#2a4a6a;font-weight:600;">유안타증권 — 목표가 97,000원 (BUY · 커버리지 개시)</span>
+            <div style="font-size:12px;color:#8a4a00;margin-top:2px;">"상사를 넘어, 에너지로 증명되는 성장" · 26F EPS 4,640원에 Target PER 21배 적용 · SENEX+팜 2026 증익 구조적 성장 · 2030년 희토류 1.3조·영구자석 1.6조 중장기 옵션</div>
+          </div>
+          <span style="font-size:11px;color:#8a9aaa;">2026.04.17</span>
+        </a>
+        <a href="https://www.ferrotimes.com/news/articleView.html?idxno=46097" target="_blank"
+           style="display:flex;align-items:baseline;gap:12px;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(0,60,120,0.05);">
+          <span style="font-size:10px;font-weight:700;color:white;flex-shrink:0;background:#b06010;padding:3px 8px;border-radius:6px;">BUY</span>
+          <div style="flex:1;">
+            <span style="font-size:13px;color:#2a4a6a;font-weight:600;">키움증권 — 목표가 80,000원 (BUY)</span>
+            <div style="font-size:12px;color:#8a4a00;margin-top:2px;">"세넥스 OP YoY+117% 급증·증산 효과 가시화" · 낮아진 유가에도 안정적 실적 성장 · 1Q26부터 가파른 OP 성장 전망</div>
+          </div>
+          <span style="font-size:11px;color:#8a9aaa;">2026.01.30</span>
+        </a>
+        <a href="https://kbthink.com/securities-view.html?docId=20260129183613200K" target="_blank"
+           style="display:flex;align-items:baseline;gap:12px;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(0,60,120,0.05);">
+          <span style="font-size:10px;font-weight:700;color:#0a1a2a;flex-shrink:0;background:#b06010;padding:3px 8px;border-radius:6px;">BUY</span>
+          <div style="flex:1;">
+            <span style="font-size:13px;color:#2a4a6a;font-weight:600;">KB증권 — 목표가 73,000원 ↑ (BUY)</span>
+            <div style="font-size:12px;color:#8a4a00;margin-top:2px;">"2026년 영업이익 1,500억원 증익 예상" · P/B 1.8배·ROE 13.2% 적용 · 원자재 가격 흐름 우호적</div>
+          </div>
+          <span style="font-size:11px;color:#8a9aaa;">2026.01.29</span>
+        </a>
+        <a href="https://kbthink.com/securities-view.html?docId=20260115155842357K" target="_blank"
+           style="display:flex;align-items:baseline;gap:12px;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(0,60,120,0.05);">
+          <span style="font-size:10px;font-weight:700;color:#0a1a2a;flex-shrink:0;background:#b06010;padding:3px 8px;border-radius:6px;">BUY</span>
+          <div style="flex:1;">
+            <span style="font-size:13px;color:#2a4a6a;font-weight:600;">KB증권 — 목표가 69,000원 ↑ (BUY)</span>
+            <div style="font-size:12px;color:#8a4a00;margin-top:2px;">"팜사업 M&A 효과 + 세넥스 증산" · 2026E OP 1.3조 · P/B 1.7배 적용</div>
+          </div>
+          <span style="font-size:11px;color:#8a9aaa;">2026.01.15</span>
+        </a>
+        <a href="https://stock1.brokdam.com" target="_blank"
+           style="display:flex;align-items:baseline;gap:12px;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(0,60,120,0.05);">
+          <span style="font-size:10px;font-weight:700;color:#0a1a2a;flex-shrink:0;background:#b06010;padding:3px 8px;border-radius:6px;">BUY</span>
+          <div style="flex:1;">
+            <span style="font-size:13px;color:#2a4a6a;font-weight:600;">하나증권 — 목표가 76,000원 (BUY)</span>
+            <div style="font-size:12px;color:#8a4a00;margin-top:2px;">"다시 증익 구간 진입" · 4Q25 컨센서스 상회 · 세넥스 증산+팜 인수 효과</div>
+          </div>
+          <span style="font-size:11px;color:#8a9aaa;">2026.01~02</span>
+        </a>
+        <a href="https://www.joseilbo.com/news/htmls/2026/01/20260119561004.html" target="_blank"
+           style="display:flex;align-items:baseline;gap:12px;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(0,60,120,0.05);">
+          <span style="font-size:10px;font-weight:700;color:#0a1a2a;flex-shrink:0;background:#b06010;padding:3px 8px;border-radius:6px;">BUY</span>
+          <div style="flex:1;">
+            <span style="font-size:13px;color:#2a4a6a;font-weight:600;">IBK투자증권 — 목표가 88,000원 (BUY)</span>
+            <div style="font-size:12px;color:#8a4a00;margin-top:2px;">희토류 밸류체인 + 알래스카 LNG 참여 · 구동모터코어 현지화 전략 높이 평가</div>
+          </div>
+          <span style="font-size:11px;color:#8a9aaa;">2026.01.19</span>
+        </a>
+        <a href="https://www.etoday.co.kr/news/view/2518484" target="_blank"
+           style="display:flex;align-items:baseline;gap:12px;text-decoration:none;padding:8px 0;">
+          <span style="font-size:10px;font-weight:700;color:#0a1a2a;flex-shrink:0;background:#b06010;padding:3px 8px;border-radius:6px;">BUY</span>
+          <div style="flex:1;">
+            <span style="font-size:13px;color:#2a4a6a;font-weight:600;">iM증권 — 목표가 70,000원 ↑ (BUY)</span>
+            <div style="font-size:12px;color:#8a4a00;margin-top:2px;">"희토류+LNG 두 축 성장" · 탈중국 공급망 핵심 대안 · 목표 PER 15.8배</div>
+          </div>
+          <span style="font-size:11px;color:#8a9aaa;">2025.10</span>
+        </a>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="https://comp.fnguide.com/SVO2/asp/SVD_Consensus.asp?pGB=1&gicode=A047050&MenuYn=Y" target="_blank"
+           style="font-size:11px;color:#2a6ab0;font-weight:600;text-decoration:none;background:rgba(40,100,180,0.06);padding:5px 12px;border-radius:8px;border:1px solid rgba(40,100,180,0.12);">FnGuide 컨센서스 ↗</a>
+        <a href="https://m.irgo.co.kr/IR-COMP/047050" target="_blank"
+           style="font-size:11px;color:#2a6ab0;font-weight:600;text-decoration:none;background:rgba(40,100,180,0.06);padding:5px 12px;border-radius:8px;border:1px solid rgba(40,100,180,0.12);">IRGO IR ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 외부 링크 -->
+  <div class="section" style="animation-delay:0.54s;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a class="link-btn" href="https://finance.naver.com/item/main.naver?code=047050" target="_blank">📈 네이버 금융 →</a>
+      <a class="link-btn" href="https://dart.fss.or.kr/dsab001/search.ax?textCrpNm=포스코인터내셔널" target="_blank">📋 DART 공시 →</a>
+      <a class="link-btn" href="https://www.poscointl.com" target="_blank">🏠 포스코인터내셔널 홈페이지 →</a>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    🌏 포스코인터내셔널 · 산업 탐사도<br>
+    본 페이지는 투자 권유가 아닙니다 · DART 공시 및 증권사 리서치 기반 · 수치는 참고용
+  </div>
+
+</div>
+
+
+
+<!-- 툴팁 -->
+<div id="tip-popup" style="position:fixed;z-index:9999;background:#fff;border:1px solid rgba(30,100,180,0.2);border-radius:10px;padding:8px 12px;font-size:12px;line-height:1.7;color:#3a5a7a;white-space:pre-wrap;width:220px;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,60,120,0.12);pointer-events:none;opacity:0;transition:opacity 0.15s;font-family:'Noto Sans KR',sans-serif;"></div>
+<script>
+(function(){
+  const popup=document.getElementById('tip-popup');let hideTimer;
+  document.querySelectorAll('.tip').forEach(el=>{
+    el.addEventListener('mouseenter',function(){showTip(this);});
+    el.addEventListener('touchstart',function(e){e.preventDefault();clearTimeout(hideTimer);showTip(this);hideTimer=setTimeout(hideTip,6000);},{passive:false});
+    el.addEventListener('mouseleave',hideTip);
+  });
+  document.addEventListener('touchstart',function(e){if(!e.target.closest('.tip'))hideTip();});
+  function showTip(el){clearTimeout(hideTimer);const tip=el.getAttribute('data-tip');if(!tip)return;popup.textContent=tip;popup.style.opacity='0';const rect=el.getBoundingClientRect();const pw=popup.offsetWidth||220;const ph=popup.offsetHeight||80;const vw=window.innerWidth;const margin=12;let left=rect.left+rect.width/2-pw/2;if(left<margin)left=margin;if(left+pw>vw-margin)left=vw-pw-margin;let top=rect.top-ph-8;if(top<margin)top=rect.bottom+8;popup.style.left=left+'px';popup.style.top=top+'px';popup.style.opacity='1';}
+  function hideTip(){popup.style.opacity='0';}
+})();
+</script>
+
+</body>
+</html>

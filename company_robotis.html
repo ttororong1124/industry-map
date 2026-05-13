@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로보티즈 · 산업 탐사도</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { overflow-x:hidden; }
+  body {
+    font-family:'Noto Sans KR',sans-serif;
+    background:linear-gradient(180deg,#eef2f8 0%,#dde4f0 25%,#ccd5ea 55%,#bdc8e2 100%);
+    min-height:100vh; color:#1a2030; overflow-x:hidden;
+  }
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(ellipse 70% 50% at 30% 20%, rgba(255,255,255,0.6) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 70%, rgba(60,100,220,0.1) 0%, transparent 60%);
+  }
+  body::after {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(ellipse 60% 30% at 50% 0%, rgba(160,190,255,0.18) 0%, transparent 60%),
+      repeating-linear-gradient(90deg, rgba(80,110,200,0.025) 0px, rgba(80,110,200,0.025) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(0deg,  rgba(80,110,200,0.025) 0px, rgba(80,110,200,0.025) 1px, transparent 1px, transparent 60px);
+    animation: gridPulse 8s ease-in-out infinite alternate;
+  }
+  @keyframes gridPulse { 0%{opacity:0.5} 100%{opacity:1} }
+
+  /* 상단 회로 라인 */
+  .wave-top{position:fixed;top:0;left:0;right:0;height:52px;pointer-events:none;z-index:1;overflow:hidden;}
+  .wave-top-inner{display:flex;width:200%;height:100%;animation:waveScroll 14s linear infinite;}
+  .wave-top-inner svg{width:50%;height:100%;flex-shrink:0;}
+  @keyframes waveScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  /* 부유 파티클 */
+  .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .particle{position:absolute;border-radius:50%;background:rgba(60,100,220,0.3);animation:floatUp linear infinite;}
+  .particle:nth-child(1){width:3px;height:3px;left:10%;animation-duration:20s;animation-delay:0s;}
+  .particle:nth-child(2){width:4px;height:4px;left:28%;animation-duration:26s;animation-delay:4s;}
+  .particle:nth-child(3){width:2px;height:2px;left:52%;animation-duration:18s;animation-delay:9s;}
+  .particle:nth-child(4){width:3px;height:3px;left:72%;animation-duration:22s;animation-delay:2s;}
+  .particle:nth-child(5){width:5px;height:5px;left:86%;animation-duration:24s;animation-delay:7s;}
+  .particle:nth-child(6){width:3px;height:3px;left:40%;animation-duration:19s;animation-delay:13s;}
+  @keyframes floatUp{0%{transform:translateY(100vh);opacity:0}10%{opacity:0.55}90%{opacity:0.18}100%{transform:translateY(-20px);opacity:0}}
+
+  /* 로봇 마스코트 */
+  .mascot{position:fixed;top:60px;right:-10px;width:260px;opacity:0.09;pointer-events:none;z-index:0;animation:robotFloat 7s ease-in-out infinite;}
+  @keyframes robotFloat{0%,100%{transform:translateY(0) rotate(2deg)}50%{transform:translateY(-16px) rotate(-1deg)}}
+
+  /* 레이아웃 */
+  .page{position:relative;z-index:1;padding:48px 32px 88px;max-width:940px;margin:0 auto;}
+  @media(min-width:1200px){.page{padding:52px 40px 88px;}}
+  @media(max-width:600px){
+    .page{padding:28px 18px 80px;}
+    .kpi-row{grid-template-columns:repeat(2,1fr)!important;gap:8px;}
+    .kpi-box{padding:12px 14px;}
+    .hero h1{font-size:28px!important;}
+    .two-col-ip{grid-template-columns:1fr!important;}
+    .profile-two-col{grid-template-columns:1fr!important;}
+    .fin-table-wrap{overflow-x:auto;}
+    .seg-tabs{gap:6px;}
+    .seg-tab{padding:7px 12px;font-size:11px;}
+  }
+
+  /* 네비 */
+  .topnav{display:flex;align-items:center;gap:12px;margin-bottom:44px;animation:fadeDown 0.5s ease both;}
+  .back-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:#1a4aaa;text-decoration:none;background:rgba(255,255,255,0.6);border:1px solid rgba(50,90,200,0.22);padding:6px 14px;border-radius:20px;transition:background 0.2s;backdrop-filter:blur(6px);}
+  .back-btn:hover{background:rgba(255,255,255,0.85);}
+  .breadcrumb{font-size:12px;color:#4a5a9a;}
+  .breadcrumb span{color:#1a50cc;font-weight:700;}
+
+  /* 히어로 */
+  .hero{margin-bottom:32px;animation:fadeDown 0.6s 0.05s ease both;}
+  .hero h1{font-size:clamp(26px,5vw,42px);font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:10px;color:#0a1a3a;}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,#1a50d0,#4080f0,#40b0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .hero-sub{font-size:12px;color:#3a50aa;margin-bottom:16px;letter-spacing:1px;}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+  .hero-tag{font-size:12px;font-weight:600;padding:4px 12px;border-radius:14px;background:rgba(255,255,255,0.55);border:1px solid rgba(30,70,200,0.22);color:#1a3a8a;}
+  .hero-intro{font-size:15px;color:#2a3a5a;line-height:1.9;max-width:820px;}
+
+  /* 섹션 공통 */
+  .section{margin-bottom:40px;animation:fadeUp 0.6s ease forwards;}
+  .section-title{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;font-size:14px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1a50b0;margin-bottom:18px;}
+  .section-title::after{content:'';flex:1;height:1px;background:rgba(30,80,200,0.18);}
+
+  /* 2컬럼 투자포인트·리스크 */
+  .two-col-ip{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+  .ip-col{background:rgba(210,240,220,0.72);border:1.5px solid rgba(22,134,74,0.25);border-radius:16px;padding:18px 20px;backdrop-filter:blur(10px);}
+  .ip-col.risk{border-color:rgba(192,48,48,0.28);background:rgba(255,240,238,0.72);}
+  .ip-col-header{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1.5px solid rgba(22,134,74,0.20);}
+  .ip-col.risk .ip-col-header{border-bottom-color:rgba(192,48,48,0.20);}
+  .ip-col-header-icon{font-size:16px;}
+  .ip-col-header-text{color:#0e6a35;}
+  .ip-col.risk .ip-col-header-text{color:#b02020;}
+  .ip-col-item{display:flex;gap:10px;margin-bottom:12px;}
+  .ip-col-item:last-child{margin-bottom:0;}
+  .ip-col-num{font-size:13px;font-weight:800;color:#0e6a35;flex-shrink:0;min-width:18px;}
+  .ip-col.risk .ip-col-num{color:#c03030;}
+  .ip-col-title{font-size:13px;font-weight:700;color:#1a2a3a;line-height:1.4;margin-bottom:3px;}
+  .ip-col-desc{font-size:clamp(11px,0.95vw,12px);color:#4a5a7a;line-height:1.65;}
+
+  /* 기업 프로필 2컬럼 */
+  .profile-two-col{display:grid;grid-template-columns:1fr 1fr;gap:0;background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);border-radius:16px;overflow:hidden;margin-bottom:24px;backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(0,40,120,0.06);}
+  .profile-two-col .pcol{padding:16px 22px;}
+  .profile-two-col .pcol:first-child{border-right:1px solid rgba(0,40,120,0.07);}
+  .profile-two-col .prow{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,40,120,0.06);}
+  .profile-two-col .prow:last-child{border-bottom:none;}
+  .profile-two-col .plabel{font-size:11px;font-weight:700;color:#7a8ab0;flex-shrink:0;width:64px;line-height:1.5;}
+  .profile-two-col .pval{font-size:13px;color:#1a2a4a;line-height:1.55;flex:1;}
+  .profile-two-col .pval small{font-size:11px;color:#6a7aaa;display:block;margin-top:1px;}
+
+  /* KPI 스냅샷 — 포스코인터 스타일 */
+  .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(148px,45%),1fr));gap:10px;margin-bottom:12px;}
+  .kpi-box{background:rgba(255,255,255,0.88);border:1px solid rgba(200,215,235,0.70);border-radius:14px;padding:15px 16px 13px;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,30,100,0.05);min-width:0;}
+  .kpi-box-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1a50b0;margin-bottom:7px;}
+  .kpi-box-value{font-size:clamp(18px,2.2vw,24px);font-weight:900;color:#0d1830;letter-spacing:-0.5px;line-height:1.1;}
+  .kpi-box-value.red{color:#c03030;}
+  .kpi-box-value.green{color:#16864a;}
+  .kpi-box-value.orange{color:#b06010;}
+  .kpi-box-delta{font-size:11px;font-weight:700;margin-top:4px;}
+  .kpi-box-delta.up{color:#16864a;} .kpi-box-delta.dn{color:#c43030;} .kpi-box-delta.neu{color:#5a6a8a;}
+  .kpi-box-note{font-size:10px;color:#7a8a9a;margin-top:5px;line-height:1.6;}
+  .kpi-box-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;margin-top:6px;}
+  .kpi-box-tag.green{background:rgba(22,134,74,0.10);color:#107a40;}
+  .kpi-box-tag.blue{background:rgba(26,74,180,0.10);color:#1a4a9a;}
+  .kpi-box-tag.red{background:rgba(192,48,48,0.10);color:#a02020;}
+  .kpi-box-tag.warn{background:rgba(180,100,20,0.10);color:#8a4a00;}
+  .kpi-row-line{display:flex;align-items:baseline;gap:5px;white-space:nowrap;margin-bottom:4px;}
+  .kpi-row-lbl{font-size:10px;color:#8a9ab0;font-weight:600;flex-shrink:0;width:26px;}
+  .kpi-row-val{font-size:clamp(14px,3.5vw,17px);font-weight:900;color:#0d1830;letter-spacing:-0.3px;}
+  .kpi-row-val.red{color:#c03030;} .kpi-row-val.green{color:#16864a;} .kpi-row-val.gray{color:#5a6a8a;}
+  .kpi-row-delta{font-size:9px;font-weight:700;margin-left:auto;flex-shrink:0;}
+  .kpi-row-delta.up{color:#16864a;} .kpi-row-delta.dn{color:#c43030;}
+  .opm-row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
+  .opm-yr{font-size:10px;color:#8a9ab0;font-weight:600;flex-shrink:0;width:38px;}
+  .opm-val{font-size:clamp(13px,3.5vw,16px);font-weight:800;}
+  .kpi-wide{background:rgba(255,255,255,0.88);border:1px solid rgba(22,134,74,0.20);border-radius:14px;padding:15px 16px 13px;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,30,100,0.05);margin-bottom:12px;}
+  .kpi-wide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+  .kpi-wide-cell{padding:8px 10px;border-radius:10px;text-align:center;}
+  @media(max-width:600px){.kpi-row{grid-template-columns:repeat(2,1fr);} .kpi-wide-grid{grid-template-columns:repeat(3,1fr);gap:5px;}}
+
+  /* 밸류체인 */
+  .vc-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:4px 0;margin-bottom:8px;-webkit-overflow-scrolling:touch;}
+  .vc-node{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:700;text-align:center;border:1px solid rgba(0,40,120,0.1);background:rgba(255,255,255,0.4);min-width:74px;color:#4a5a9a;white-space:nowrap;}
+  .vc-node.highlight{background:rgba(30,80,200,0.10);border-color:#2050c0;color:#1a3a8a;box-shadow:0 0 16px rgba(30,80,200,0.12);}
+  .vc-node.highlight2{background:rgba(30,140,220,0.10);border-color:#2090d0;color:#0a4a7a;box-shadow:0 0 12px rgba(30,140,220,0.10);}
+  .vc-node-icon{font-size:20px;}
+  .vc-sep{color:rgba(0,40,120,0.25);font-size:16px;padding:0 5px;flex-shrink:0;}
+  .vc-caption{font-size:14px;color:#3a4a6a;margin-top:10px;line-height:1.75;}
+  .vc-caption strong{color:#1a40a0;}
+
+  /* 세그먼트 탭 */
+  .seg-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .seg-tab{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:700;background:rgba(255,255,255,0.5);border:1.5px solid rgba(30,80,200,0.2);color:#2a3a6a;cursor:pointer;transition:all 0.2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+  .seg-tab:hover{background:rgba(255,255,255,0.78);border-color:#2050c0;}
+  .seg-tab.active{background:rgba(30,80,200,0.10);border-color:#2050c0;color:#1a3a8a;}
+  .seg-panel{background:rgba(255,255,255,0.52);border:1.5px solid rgba(30,80,200,0.18);border-radius:18px;padding:24px;backdrop-filter:blur(8px);display:none;}
+  .seg-panel.active{display:block;animation:fadeUp 0.3s ease forwards;}
+  .seg-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;}
+  .seg-icon-big{font-size:36px;flex-shrink:0;}
+  .seg-meta{flex:1;}
+  .seg-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 10px;border-radius:8px;margin-bottom:6px;background:rgba(30,80,200,0.08);border:1px solid rgba(30,80,200,0.2);color:#1a4ab0;}
+  .seg-name-big{font-size:20px;font-weight:900;color:#1a3a8a;margin-bottom:4px;}
+  .seg-sub{font-size:clamp(11px,0.9vw,13px);color:#4a5a8a;}
+  .seg-body{font-size:clamp(14px,1.25vw,16px);color:#2a3a5a;line-height:1.9;}
+
+  /* 관련 기업 */
+  .related{display:flex;flex-wrap:wrap;gap:8px;}
+  .rel-chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.55);border:1px solid rgba(0,40,120,0.12);border-radius:20px;padding:7px 16px;font-size:13px;color:#2a4a8a;text-decoration:none;transition:all 0.2s;}
+  .rel-chip:hover{background:rgba(30,80,200,0.08);border-color:rgba(30,80,200,0.3);color:#1a3a8a;}
+
+  /* 링크 버튼 */
+  .link-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(30,80,200,0.08);border:1px solid rgba(30,80,200,0.22);color:#1a50b0;font-size:12px;font-weight:700;padding:10px 20px;border-radius:24px;text-decoration:none;transition:all 0.2s;}
+  .link-btn:hover{background:rgba(30,80,200,0.15);border-color:#2050c0;}
+
+  /* pt-box */
+  .pt-box{background:rgba(30,80,200,0.06);border-left:3px solid #2050c0;border-radius:0 10px 10px 0;padding:10px 14px;margin:12px 0;}
+  .pt-box.warn{background:rgba(192,48,48,0.06);border-left-color:#c03030;}
+  .pt-box .pt-tag{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#1a40a0;margin-bottom:4px;}
+  .pt-box.warn .pt-tag{color:#a03030;}
+  .pt-box p{font-size:clamp(14px,1.25vw,16px);color:#2a3a5a;line-height:1.8;}
+
+  .page-footer{text-align:center;margin-top:48px;color:#4a5a8a;font-size:11px;line-height:2;}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- 상단 회로 라인 -->
+<div class="wave-top">
+  <div class="wave-top-inner">
+    <svg viewBox="0 0 960 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="26" x2="60" y2="26" stroke="rgba(60,100,220,0.22)" stroke-width="1"/>
+      <rect x="60" y="18" width="16" height="16" rx="2" fill="none" stroke="rgba(60,100,220,0.28)" stroke-width="1"/>
+      <line x1="76" y1="26" x2="160" y2="26" stroke="rgba(60,100,220,0.18)" stroke-width="1"/>
+      <circle cx="160" cy="26" r="4" fill="none" stroke="rgba(60,100,220,0.35)" stroke-width="1.2"/>
+      <line x1="164" y1="26" x2="260" y2="26" stroke="rgba(60,100,220,0.18)" stroke-width="1"/>
+      <rect x="260" y="20" width="12" height="12" rx="2" fill="rgba(60,100,220,0.07)" stroke="rgba(60,100,220,0.28)" stroke-width="1"/>
+      <line x1="272" y1="26" x2="380" y2="26" stroke="rgba(60,100,220,0.15)" stroke-width="1"/>
+      <circle cx="380" cy="26" r="3" fill="rgba(60,100,220,0.25)"/>
+      <line x1="383" y1="26" x2="500" y2="26" stroke="rgba(60,100,220,0.18)" stroke-width="1"/>
+      <rect x="500" y="19" width="14" height="14" rx="2" fill="none" stroke="rgba(60,100,220,0.28)" stroke-width="1"/>
+      <line x1="514" y1="26" x2="640" y2="26" stroke="rgba(60,100,220,0.15)" stroke-width="1"/>
+      <circle cx="640" cy="26" r="4" fill="none" stroke="rgba(60,100,220,0.30)" stroke-width="1.2"/>
+      <line x1="644" y1="26" x2="780" y2="26" stroke="rgba(60,100,220,0.18)" stroke-width="1"/>
+      <rect x="780" y="21" width="10" height="10" rx="2" fill="rgba(60,100,220,0.07)" stroke="rgba(60,100,220,0.25)" stroke-width="1"/>
+      <line x1="790" y1="26" x2="960" y2="26" stroke="rgba(60,100,220,0.15)" stroke-width="1"/>
+    </svg>
+    <svg viewBox="0 0 960 52" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="26" x2="60" y2="26" stroke="rgba(60,100,220,0.22)" stroke-width="1"/>
+      <rect x="60" y="18" width="16" height="16" rx="2" fill="none" stroke="rgba(60,100,220,0.28)" stroke-width="1"/>
+      <line x1="76" y1="26" x2="160" y2="26" stroke="rgba(60,100,220,0.18)" stroke-width="1"/>
+      <circle cx="160" cy="26" r="4" fill="none" stroke="rgba(60,100,220,0.35)" stroke-width="1.2"/>
+      <line x1="164" y1="26" x2="260" y2="26" stroke="rgba(60,100,220,0.18)" stroke-width="1"/>
+      <rect x="260" y="20" width="12" height="12" rx="2" fill="rgba(60,100,220,0.07)" stroke="rgba(60,100,220,0.28)" stroke-width="1"/>
+      <line x1="272" y1="26" x2="380" y2="26" stroke="rgba(60,100,220,0.15)" stroke-width="1"/>
+      <circle cx="380" cy="26" r="3" fill="rgba(60,100,220,0.25)"/>
+      <line x1="383" y1="26" x2="500" y2="26" stroke="rgba(60,100,220,0.18)" stroke-width="1"/>
+      <rect x="500" y="19" width="14" height="14" rx="2" fill="none" stroke="rgba(60,100,220,0.28)" stroke-width="1"/>
+      <line x1="514" y1="26" x2="640" y2="26" stroke="rgba(60,100,220,0.15)" stroke-width="1"/>
+      <circle cx="640" cy="26" r="4" fill="none" stroke="rgba(60,100,220,0.30)" stroke-width="1.2"/>
+      <line x1="644" y1="26" x2="780" y2="26" stroke="rgba(60,100,220,0.18)" stroke-width="1"/>
+      <rect x="780" y="21" width="10" height="10" rx="2" fill="rgba(60,100,220,0.07)" stroke="rgba(60,100,220,0.25)" stroke-width="1"/>
+      <line x1="790" y1="26" x2="960" y2="26" stroke="rgba(60,100,220,0.15)" stroke-width="1"/>
+    </svg>
+  </div>
+</div>
+
+<!-- 파티클 -->
+<div class="particles">
+  <div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div>
+</div>
+
+<!-- 로봇 마스코트 -->
+<div class="mascot">
+  <svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <rect x="70" y="20" width="60" height="55" rx="12" fill="#2050c0" opacity="0.7"/>
+    <rect x="82" y="32" width="16" height="12" rx="3" fill="#60b0ff" opacity="0.9"/>
+    <rect x="102" y="32" width="16" height="12" rx="3" fill="#60b0ff" opacity="0.9"/>
+    <rect x="85" y="52" width="30" height="6" rx="3" fill="#3080e0" opacity="0.6"/>
+    <rect x="50" y="85" width="100" height="90" rx="14" fill="#1a40b0" opacity="0.7"/>
+    <rect x="62" y="98" width="30" height="20" rx="4" fill="#3070d0" opacity="0.5"/>
+    <rect x="108" y="98" width="30" height="20" rx="4" fill="#3070d0" opacity="0.5"/>
+    <rect x="62" y="126" width="76" height="38" rx="6" fill="#2060c0" opacity="0.4"/>
+    <rect x="30" y="90" width="18" height="60" rx="9" fill="#2050c0" opacity="0.6"/>
+    <rect x="152" y="90" width="18" height="60" rx="9" fill="#2050c0" opacity="0.6"/>
+    <rect x="65" y="178" width="28" height="75" rx="12" fill="#1a40b0" opacity="0.6"/>
+    <rect x="107" y="178" width="28" height="75" rx="12" fill="#1a40b0" opacity="0.6"/>
+  </svg>
+</div>
+
+<div class="page">
+
+  <!-- 네비 -->
+  <nav class="topnav">
+    <a href="sector_robot.html" class="back-btn">← 로봇 섹터</a>
+    <div class="breadcrumb">산업 탐사도 › 로봇 › 핵심부품·휴머노이드 › <span>로보티즈</span></div>
+  </nav>
+
+  <!-- 히어로 -->
+  <div class="hero">
+    <div style="font-size:clamp(20px,2.2vw,28px);font-weight:900;color:#1a2a4a;letter-spacing:-0.5px;margin-bottom:6px;">로보티즈 (ROBOTIS)</div>
+    <h1 style="font-size:clamp(26px,3.8vw,38px);font-weight:900;letter-spacing:-2px;line-height:1.05;margin-bottom:12px;color:#0a1a3a;">다이나믹셀로 세상을 움직이는 <em style="font-style:normal;background:linear-gradient(90deg,#1a50d0,#4080f0,#40b0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">한국 1세대 로봇기업</em></h1>
+    <div class="hero-sub" style="margin-bottom:12px;">KOSDAQ 기술특례상장 · 108490 · LG전자 6.67% 전략적 주주</div>
+    <div class="hero-tags">
+      <span class="hero-tag" style="background:rgba(255,255,255,0.7);font-weight:700;color:#2a3a6a;border-color:rgba(0,40,120,0.18);">KOSDAQ · 108490</span>
+      <span class="hero-tag" style="background:rgba(22,134,74,0.10);color:#0e6a35;border-color:rgba(22,134,74,0.25);">✅ 2025년 흑자전환 (영업이익 +33억)</span>
+      <span class="hero-tag" style="background:rgba(30,80,200,0.10);color:#1a3a8a;border-color:rgba(30,80,200,0.28);">글로벌 1,000여 고객사 (테슬라·구글·보스턴다이내믹스)</span>
+      <span class="hero-tag" style="background:rgba(180,100,20,0.10);color:#8a4a00;border-color:rgba(180,100,20,0.25);">⚠️ PSR ~116배 · 미래 가치 선반영</span>
+    </div>
+    <div class="hero-intro">
+      로보티즈는 1999년 설립된 한국 1세대 로봇 전문기업이에요. 핵심 제품 <strong style="color:#1a40a0;">다이나믹셀(DYNAMIXEL)</strong>은 모터·감속기·제어기·통신이 하나로 통합된 로봇 관절 모듈로, 60여 개국 1,000여 기업이 사용 중입니다. 테슬라 Optimus, 보스턴다이내믹스, 구글, 유니트리 등 글로벌 빅테크가 핵심 고객이고, 스탠퍼드 ALOHA 등 학계 표준으로도 자리잡았어요. <strong style="color:#0e6a35;">2025년 4년 만의 흑자전환</strong>(영업이익 +33억)과 함께 휴머노이드 'AI Worker' 공식 판매 개시, 우즈베키스탄 데이터 팩토리 추진 등 변곡점을 맞고 있습니다.
+    </div>
+  </div>
+
+  <!-- 밸류체인 -->
+  <div class="section" style="animation-delay:0.06s;">
+    <div class="section-title">로봇 산업 밸류체인 — 로보티즈의 포지션</div>
+    <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(0,40,120,0.08);border-radius:14px;padding:18px 20px;">
+      <div class="vc-flow">
+        <div class="vc-node"><div class="vc-node-icon">🔩</div><div>모터·소재<br><span style="font-size:10px;color:#7a8a9a;">외부 조달</span></div></div>
+        <div class="vc-sep">›</div>
+        <div class="vc-node highlight"><div class="vc-node-icon">⚙️</div><div>액추에이터<br><span style="font-size:10px;color:#1a3a8a;">다이나믹셀 97%</span></div></div>
+        <div class="vc-sep">›</div>
+        <div class="vc-node highlight2"><div class="vc-node-icon">🤖</div><div>휴머노이드<br><span style="font-size:10px;color:#0a4a7a;">AI Worker</span></div></div>
+        <div class="vc-sep">›</div>
+        <div class="vc-node highlight2"><div class="vc-node-icon">📊</div><div>데이터<br><span style="font-size:10px;color:#0a4a7a;">우즈벡 팩토리</span></div></div>
+        <div class="vc-sep">›</div>
+        <div class="vc-node"><div class="vc-node-icon">🏭</div><div>최종 사용처<br><span style="font-size:10px;color:#7a8a9a;">물류·제조·연구</span></div></div>
+      </div>
+      <div class="vc-caption">
+        로보티즈는 로봇 밸류체인의 <strong>핵심 부품(액추에이터) → 완제품(휴머노이드) → 데이터(소프트웨어)</strong>까지 수직 통합형으로 확장 중인 드문 기업이에요. 부품 회사에서 시작해 휴머노이드 완제품 'AI Worker'를 자체 제작하고, 거기에서 나오는 <strong>로봇 동작 데이터</strong>를 수집·판매하는 데이터 팩토리 사업까지 진출. 이는 글로벌 빅테크에게 데이터를 공급하는 <strong>'액션 데이터 허브'</strong> 전략입니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2컬럼 투자포인트·리스크 -->
+  <div class="two-col-ip" style="animation:fadeUp 0.6s 0.08s ease both;">
+    <!-- 투자 포인트 -->
+    <div class="ip-col">
+      <div class="ip-col-header">
+        <span class="ip-col-header-icon">🚀</span>
+        <span class="ip-col-header-text">핵심 투자 포인트</span>
+      </div>
+      <div class="ip-col-item">
+        <span class="ip-col-num">①</span>
+        <div>
+          <div class="ip-col-title">4년 만의 흑자전환 — 2025년 영업이익 +33억 달성</div>
+          <div class="ip-col-desc">- 2025년 매출 <b>389억 (+29.6% YoY)</b>, 영업이익 <b>+33억 (흑전!)</b>, 당기순이익 +53억 (DART 사업보고서 확정).<br>- 2021년 이후 4년 적자 끝에 변곡점 도달. 신제품 다이나믹셀 Y/Q 시리즈 출하 + AI Worker 판매 호조가 견인.<br>- 미국 매출 30% + 수출 비중 80% — 환율·해외 수요 직접 노출.</div>
+        </div>
+      </div>
+      <div class="ip-col-item">
+        <span class="ip-col-num">②</span>
+        <div>
+          <div class="ip-col-title">글로벌 빅테크 1,000여 고객 — 액추에이터 사실상 표준</div>
+          <div class="ip-col-desc">- 60여 개국 1,000여 고객사: <b>테슬라 Optimus, 보스턴다이내믹스, 구글, 유니트리, 오픈AI</b> 등.<br>- 스탠퍼드 ALOHA(저비용 양팔 로봇 학습 플랫폼)의 핵심 하드웨어로 채택되어 학계 표준화.<br>- <b>LG전자 6.67% 지분 보유 (5% 이상 주주)</b> — 스마트팩토리 자동화 협력 진행 중. K-휴머노이드 연합 핵심 멤버.</div>
+        </div>
+      </div>
+      <div class="ip-col-item">
+        <span class="ip-col-num">③</span>
+        <div>
+          <div class="ip-col-title">AI Worker 휴머노이드 본격 판매 — Physical AI 선두</div>
+          <div class="ip-col-desc">- 2025년 양팔 작업형 휴머노이드 'AI Worker' 공식 판매 개시. CJ대한통운·BGF리테일/로지스 등 국내 물류 PoC 진행.<br>- 모방학습+강화학습 기반 피지컬 AI — 숙련자 동작을 학습해 비정형 작업(분류·피킹·반품) 수행.<br>- 산업통상부 'AI 파운데이션 모델 휴머노이드' 과제 수주 (VLA 모델 내재화).</div>
+        </div>
+      </div>
+      <div class="ip-col-item">
+        <span class="ip-col-num">④</span>
+        <div>
+          <div class="ip-col-title">우즈베키스탄 데이터 팩토리 — 세계 최대 도전</div>
+          <div class="ip-col-desc">- 11만㎡(3.3만평) 부지에 데이터 팩토리 건설 중. <b>2026.07 완공, 10월 정식 가동</b> 목표.<br>- 1,000명 규모 인력 투입 계획 (현재 100명). 중국 애지봇 데이터 팩토리 초과 규모 목표.<br>- 액추에이터 CAPA 2026년말 50만대 → 2029년 <b>330만대</b>로 확대. QDD 양산 2026 Q4.<br>- 2025.11 유상증자 <b>2,098억원</b> (1,349,528주 × 155,500원) 성공 — 자금 확보 완료.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 리스크 -->
+    <div class="ip-col risk">
+      <div class="ip-col-header">
+        <span class="ip-col-header-icon">⚠️</span>
+        <span class="ip-col-header-text">반드시 짚어야 할 리스크</span>
+      </div>
+      <div class="ip-col-item">
+        <span class="ip-col-num">①</span>
+        <div>
+          <div class="ip-col-title">극단적 밸류에이션 — PSR 약 116배</div>
+          <div class="ip-col-desc">- 현재 주가 <b>355,500원</b>, 시가총액 약 <b>5.1조원</b> (14,413,442주 × 355,500).<br>- 2025년 매출 389억 대비 <b>PSR 약 131배</b> · 컨센서스 매출 644억 기준에도 <b>PSR 약 79배</b> — 글로벌 로봇 부품주 중에서도 최상위 밸류에이션.<br>- 52주 변동폭 33,950~364,000원 (<b>약 10.7배 변동</b>) — 휴머노이드 테마 의존 극심.<br>- 휴머노이드 시장 성장 둔화 시 즉각적 조정 위험.</div>
+        </div>
+      </div>
+      <div class="ip-col-item">
+        <span class="ip-col-num">②</span>
+        <div>
+          <div class="ip-col-title">우즈베키스탄 1,000억 투자 실행 리스크</div>
+          <div class="ip-col-desc">- 2025년 유상증자 2,098억원 + 우즈벡 시설투자 600억 + 운영자금 400억 = 약 <b>1,000억원 신규 투자</b>.<br>- 해외 첫 대규모 거점 — 인력 확보(1,000명), 정밀가공 품질 검증, 현지 운영 위험 상존.<br>- 데이터 팩토리는 새로운 수익모델로 검증 필요 — 글로벌 빅테크 데이터 구매 의향 확인 단계.<br>- 신용등급 BBB+ (2024.11, A-에서 하락) — 자율주행 부문 적자가 원인이었음.</div>
+        </div>
+      </div>
+      <div class="ip-col-item">
+        <span class="ip-col-num">③</span>
+        <div>
+          <div class="ip-col-title">공급망 취약 — 모터 외부 조달 + 희토류 의존</div>
+          <div class="ip-col-desc">- 액추에이터 핵심 부품인 <b>모터를 외부 조달</b> 중 — 공급망 변동성에 직접 노출.<br>- 2025년 <b>희토류 공급 부족</b>으로 고마진 신제품 다이나믹셀 Y 출하 지연 발생 (KB증권 2026.05).<br>- 중국·미국 수출규제 강화 시 매출 차질 가능성. 모터 내재화 R&D 120억 투자 진행 중이나 결실까지 시간 소요.</div>
+        </div>
+      </div>
+      <div class="ip-col-item">
+        <span class="ip-col-num">④</span>
+        <div>
+          <div class="ip-col-title">매출 97% 액추에이터 의존 + 창업자 단일 의존</div>
+          <div class="ip-col-desc">- 액추에이터(다이나믹셀) <b>매출 비중 97%</b> — 단일 제품 의존도 매우 높음. 자율주행로봇은 2025.06 물적분할로 자회사 이전.<br>- 창업자 김병수 대표 (1969년생, 1999년부터 대표) 단일 의존 — 26년 연속 대표이사. 후계 구도 불투명.<br>- 중국 후발업체(유니트리, 애지봇)와 직접 경쟁 — 가격 격차 확대 시 점유율 잠식 우려.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 기업 프로필 -->
+  <div class="section" style="animation-delay:0.1s;">
+    <div class="section-title">기업 프로필</div>
+    <div class="profile-two-col">
+      <div class="pcol">
+        <div class="prow">
+          <span class="plabel">설립일</span>
+          <span class="pval">1999년 3월 25일 <small>· 26년 업력 한국 1세대 로봇 전문기업</small></span>
+        </div>
+        <div class="prow">
+          <span class="plabel">상장일</span>
+          <span class="pval">2018년 10월 26일 <small>· KOSDAQ 기술성장기업 특례상장 · 공모가 14,000원</small></span>
+        </div>
+        <div class="prow">
+          <span class="plabel">대표이사</span>
+          <span class="pval">김병수 <small>· 창업자 · 한양대 지능형로봇 석사 · 1999년부터 대표 · 로보티즈AI 대표 겸직</small></span>
+        </div>
+        <div class="prow">
+          <span class="plabel">본사</span>
+          <span class="pval">서울 강서구 마곡중앙5로1길 37 <small>· 마곡 R&amp;D 본사 (2018년 이전)</small></span>
+        </div>
+        <div class="prow">
+          <span class="plabel">최대주주</span>
+          <span class="pval">김병수 (24.1%) <small>· 특수관계인 포함 24.2% · LG전자 6.67% (5% 이상 주주)</small></span>
+        </div>
+      </div>
+      <div class="pcol">
+        <div class="prow">
+          <span class="plabel">종목코드</span>
+          <span class="pval">108490 <small>· KOSDAQ · 발행 14,646,603주 · 유통 14,413,442주</small></span>
+        </div>
+        <div class="prow">
+          <span class="plabel">종속회사</span>
+          <span class="pval">3개사 <small>· (주)로보티즈AI(2025.06 신설, 자율주행 사업 이전) · 미국·중국 지사</small></span>
+        </div>
+        <div class="prow">
+          <span class="plabel">주요제품</span>
+          <span class="pval">다이나믹셀 (액추에이터) <small>· AI Worker 휴머노이드 · DYD 정밀 감속기 · QDD 액추에이터</small></span>
+        </div>
+        <div class="prow">
+          <span class="plabel">신용등급</span>
+          <span class="pval">BBB+ <small>· NICE디앤비 2024.11 (A-에서 하락) · 자율주행 부문 적자 원인</small></span>
+        </div>
+        <div class="prow">
+          <span class="plabel">글로벌 고객</span>
+          <span class="pval">60+ 국 1,000+ 사 <small>· 테슬라 · 보스턴다이내믹스 · 구글 · 유니트리 · 오픈AI · 스탠퍼드 등</small></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- KPI 스냅샷 -->
+  <div class="section" style="animation-delay:0.12s;">
+    <div class="section-title">핵심 수치 스냅샷 (DART 사업보고서 · 27기)</div>
+
+    <div class="kpi-row">
+
+      <!-- ① 2025 실적 확정 -->
+      <div class="kpi-box">
+        <div class="kpi-box-label">2025 실적 확정</div>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">
+          <div class="kpi-row-line">
+            <span class="kpi-row-lbl">매출</span>
+            <span class="kpi-row-val">389억</span>
+            <span class="kpi-row-delta up">↑ +29.6%</span>
+          </div>
+          <div class="kpi-row-line">
+            <span class="kpi-row-lbl">OP</span>
+            <span class="kpi-row-val green">+33억</span>
+            <span class="kpi-row-delta up">흑전!</span>
+          </div>
+        </div>
+        <div class="kpi-box-note" style="margin-top:6px;">DART 사업보고서 확정 · 2026.03.16<br>4년 만의 흑자전환 달성</div>
+        <span class="kpi-box-tag green">흑자전환 변곡점</span>
+      </div>
+
+      <!-- ② 2026E 전망 (네이버 컨센서스) -->
+      <div class="kpi-box">
+        <div class="kpi-box-label">2026E 전망 · 네이버 컨센</div>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">
+          <div class="kpi-row-line">
+            <span class="kpi-row-lbl">매출</span>
+            <span class="kpi-row-val" style="color:#1a50b0;">644억</span>
+            <span class="kpi-row-delta up">↑ +65.4%</span>
+          </div>
+          <div class="kpi-row-line">
+            <span class="kpi-row-lbl">OP</span>
+            <span class="kpi-row-val green">96억</span>
+            <span class="kpi-row-delta up">+187%</span>
+          </div>
+        </div>
+        <div class="kpi-box-note" style="margin-top:6px;">OPM 14.89% · NP 109억 (EPS 774원)<br>우즈벡 가동 · AI Worker · QDD 양산 효과</div>
+        <span class="kpi-box-tag blue">실적 가속 기대</span>
+      </div>
+
+      <!-- ③ OPM 추이 -->
+      <div class="kpi-box">
+        <div class="kpi-box-label">영업이익률 추이</div>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;">
+          <div class="opm-row">
+            <span class="opm-yr">2023</span>
+            <span class="opm-val" style="color:#c03030;">-18.2%</span>
+          </div>
+          <div class="opm-row">
+            <span class="opm-yr">2024</span>
+            <span class="opm-val" style="color:#c03030;">-9.9%</span>
+          </div>
+          <div class="opm-row">
+            <span class="opm-yr">2025</span>
+            <span class="opm-val" style="color:#16864a;">+8.6% ✓</span>
+          </div>
+          <div class="opm-row">
+            <span class="opm-yr" style="color:#16864a;font-weight:700;">2026E</span>
+            <span class="opm-val" style="color:#16864a;">+14.9% ↑</span>
+          </div>
+        </div>
+        <div class="kpi-box-note" style="margin-top:5px;">매출총이익률 62% (양호)<br>2026E = 네이버 컨센서스</div>
+      </div>
+
+      <!-- ④ 재무 건전성 -->
+      <div class="kpi-box">
+        <div class="kpi-box-label">재무 건전성</div>
+        <div class="kpi-box-value green" style="margin-top:6px;">1.8%</div>
+        <div class="kpi-box-delta neu">부채비율 (매우 양호)</div>
+        <div style="margin-top:5px;display:flex;align-items:baseline;gap:5px;">
+          <span style="font-size:9px;color:#8a9ab0;flex-shrink:0;">현금성</span>
+          <span style="font-size:15px;font-weight:900;color:#16864a;letter-spacing:-0.3px;">1,968억</span>
+        </div>
+        <div class="kpi-box-note">자본 3,141억 / 부채 56억<br>유증 2,098억 자금 확보 완료</div>
+        <span class="kpi-box-tag green">재무 매우 견조</span>
+      </div>
+
+      <!-- ⑤ 시가총액 -->
+      <div class="kpi-box">
+        <div class="kpi-box-label">시가총액</div>
+        <div class="kpi-box-value orange" style="margin-top:6px;">~5.1조</div>
+        <div style="margin-top:5px;display:flex;flex-direction:column;gap:3px;">
+          <div class="kpi-row-line">
+            <span class="kpi-row-lbl">PSR</span>
+            <span class="kpi-row-val" style="color:#b06010;">~131배</span>
+          </div>
+          <div class="kpi-row-line">
+            <span class="kpi-row-lbl">PER</span>
+            <span class="kpi-row-val" style="color:#b06010;">~692배</span>
+          </div>
+        </div>
+        <div class="kpi-box-note">355,500원 기준<br>52주 33,950~364,000원 (10.7배 변동)</div>
+        <span class="kpi-box-tag warn">미래가치 선반영</span>
+      </div>
+
+    </div>
+
+    <!-- 와이드 카드 — 2025 핵심 이벤트 -->
+    <div class="kpi-wide">
+      <div class="kpi-box-label" style="color:#0e6a35;">🎯 2025년 핵심 이벤트 — 변곡점 한 해</div>
+      <div class="kpi-wide-grid">
+        <div class="kpi-wide-cell" style="background:rgba(22,134,74,0.07);border:1px solid rgba(22,134,74,0.18);">
+          <div style="font-size:10px;font-weight:800;color:#0e6a35;margin-bottom:4px;">물적분할 (2025.06)</div>
+          <div style="font-size:9px;color:#2a4a3a;line-height:1.7;">자율주행 사업<br><b style="font-size:13px;color:#0e6a35;">로보티즈AI</b><br>신설·분리</div>
+        </div>
+        <div class="kpi-wide-cell" style="background:rgba(30,80,200,0.06);border:1px solid rgba(30,80,200,0.18);">
+          <div style="font-size:10px;font-weight:800;color:#1a3a8a;margin-bottom:4px;">유상증자 (2025.11)</div>
+          <div style="font-size:9px;color:#2a3a6a;line-height:1.7;">신주 135만주<br><b style="font-size:13px;color:#1a3a8a;">2,098억</b><br>발행가 155,500원</div>
+        </div>
+        <div class="kpi-wide-cell" style="background:rgba(180,100,20,0.07);border:1px solid rgba(180,100,20,0.20);">
+          <div style="font-size:10px;font-weight:800;color:#8a4a00;margin-bottom:4px;">우즈벡 확정 (2025.12)</div>
+          <div style="font-size:9px;color:#5a3a10;line-height:1.7;">11만㎡ 데이터팩토리<br><b style="font-size:13px;color:#8a4a00;">1,000명</b><br>규모 (2026.10 가동)</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#5a6a8a;line-height:1.65;">※ 부품→완제품→데이터 수직통합형 로봇 플랫폼 기업으로의 전환 본격화</div>
+    </div>
+  </div>
+
+  <!-- 사업 세그먼트 탭 -->
+  <div class="section" style="animation-delay:0.14s;">
+    <div class="section-title">사업 영역별 상세</div>
+
+    <!-- 매출 비중 시각화 -->
+    <div style="background:rgba(255,255,255,0.7);border:1px solid rgba(200,215,235,0.7);border-radius:14px;padding:16px 18px;margin-bottom:18px;backdrop-filter:blur(8px);">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:#1a3a8a;margin-bottom:10px;">📊 2025년 매출 구성 (DART 연결 기준)</div>
+      <!-- 가로 막대그래프 -->
+      <div style="display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid rgba(0,40,120,0.08);">
+        <div style="flex:97.14;background:linear-gradient(90deg,#1a50c0,#3070d0);display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:800;">⚙️ 다이나믹셀 액추에이터 97.14%</div>
+        <div style="flex:2.86;background:linear-gradient(90deg,#7090c0,#90a0c0);display:flex;align-items:center;justify-content:center;color:white;font-size:9px;font-weight:700;">자율주행 2.86%</div>
+      </div>
+      <!-- 세부 표 -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,45%),1fr));gap:8px;margin-top:12px;">
+        <div style="background:rgba(30,80,200,0.06);padding:9px 12px;border-radius:8px;">
+          <div style="font-size:10px;color:#5a6a8a;font-weight:600;">⚙️ 액추에이터 (다이나믹셀)</div>
+          <div style="font-size:15px;font-weight:900;color:#1a40a0;margin-top:2px;">378.3억 <span style="font-size:11px;color:#6a7aaa;">(97.14%)</span></div>
+        </div>
+        <div style="background:rgba(40,80,160,0.04);padding:9px 12px;border-radius:8px;">
+          <div style="font-size:10px;color:#5a6a8a;font-weight:600;">🚗 자율주행 (분할 전 5개월)</div>
+          <div style="font-size:15px;font-weight:900;color:#5a7aa0;margin-top:2px;">11.1억 <span style="font-size:11px;color:#6a7aaa;">(2.86%)</span></div>
+        </div>
+      </div>
+      <!-- 지역별 -->
+      <div style="margin-top:14px;padding-top:12px;border-top:1px dashed rgba(0,40,120,0.12);">
+        <div style="font-size:10px;font-weight:700;color:#6a7a9a;margin-bottom:8px;">지역별 매출 (액추에이터 기준)</div>
+        <div style="display:flex;gap:6px;font-size:11px;flex-wrap:wrap;">
+          <span style="background:rgba(30,80,200,0.10);color:#1a3a8a;padding:3px 9px;border-radius:8px;font-weight:700;">🌎 수출 76%</span>
+          <span style="background:rgba(30,140,80,0.10);color:#0a5a30;padding:3px 9px;border-radius:8px;font-weight:600;">🇺🇸 미국 30%</span>
+          <span style="background:rgba(180,100,20,0.10);color:#7a4a00;padding:3px 9px;border-radius:8px;font-weight:600;">🇰🇷 국내 24%</span>
+          <span style="background:rgba(100,100,150,0.08);color:#4a5a8a;padding:3px 9px;border-radius:8px;font-weight:600;">60+ 국 1,000+ 고객사</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="seg-tabs">
+      <div class="seg-tab active" data-seg="dyna" onclick="showSeg('dyna')">⚙️ 다이나믹셀</div>
+      <div class="seg-tab" data-seg="aiw" onclick="showSeg('aiw')">🤖 AI Worker</div>
+      <div class="seg-tab" data-seg="data" onclick="showSeg('data')">📊 데이터 팩토리</div>
+      <div class="seg-tab" data-seg="mobile" onclick="showSeg('mobile')">🚗 자율주행 (분할)</div>
+    </div>
+
+    <!-- 다이나믹셀 -->
+    <div id="seg-dyna" class="seg-panel active">
+      <div class="seg-header">
+        <div class="seg-icon-big">⚙️</div>
+        <div class="seg-meta">
+          <div class="seg-badge">CORE BUSINESS · 매출 97.14% · 378.3억</div>
+          <div class="seg-name-big">다이나믹셀 (DYNAMIXEL)</div>
+          <div class="seg-sub">로봇 관절용 통합 액추에이터 · X · P · Y · Q 시리즈 + DYD 정밀감속기</div>
+        </div>
+      </div>
+      <div class="seg-body">
+        <strong>다이나믹셀이 뭐예요?</strong> 한마디로 <b>'로봇 관절 한 덩어리'</b>예요. 보통 로봇 관절을 만들려면 모터 따로, 감속기 따로, 제어기 따로, 통신모듈 따로 사서 조립해야 하는데, 다이나믹셀은 이 4가지를 손바닥만한 모듈 하나에 다 넣었어요. 마치 레고처럼 여러 개를 일렬로 연결(데이지 체인)만 하면 로봇 한 대가 완성됩니다.<br><br>
+        <strong>왜 표준이 됐나?</strong> 100여 종 라인업 + ROS(로봇 OS) 호환 + 연구자 친화적 SDK 제공으로, 전 세계 로봇 연구개발의 사실상 표준이 됐어요. 스탠퍼드 ALOHA 양팔 학습 플랫폼의 핵심 하드웨어로 사용되며 학계에 깊이 침투. <b>테슬라 Optimus, 보스턴다이내믹스, 구글, 유니트리, 오픈AI</b> 등 글로벌 빅테크 60여 개국 1,000여 고객사 보유.
+        <div class="pt-box" style="margin-top:14px;">
+          <div class="pt-tag">제품 라인업 (4세대)</div>
+          <p><b>X 시리즈:</b> 1차 감속기 내장 — 가장 보편적 · <b>P 시리즈:</b> 1·2차 감속기로 출력 강화 · <b>Y 시리즈 (2024 출시):</b> 프레임리스 모터 + 전자식 브레이크 — 고속·고토크 정밀제어 · <b>Q 시리즈 (DYD):</b> 사이클로이드 정밀 감속기 — 휴머노이드 양산용 · <b>QDD(준직접구동) 액추에이터:</b> 2026 Q4 양산 개시 — 차세대 휴머노이드 핵심 부품</p>
+        </div>
+        <strong>매출 구성 (2025 DART):</strong> 액추에이터 매출 378.3억 중 <b>수출 직판 92.9억 + 수출 도매 243.1억 = 수출 76%</b>. 미국 매출 30% 최대 (테슬라·구글 등). 국내 직판 23.8억 + 국내 도매 83.6억. 글로벌 1,000+ 고객사로 분산되어 단일 고객 집중도 매우 낮음.
+        <div class="pt-box" style="margin-top:12px;">
+          <div class="pt-tag">생산능력 확장 로드맵</div>
+          <p>2026년 Q4 QDD 양산 시작 → 연 50만대 (이미 주문 40만대 확보) → 우즈베키스탄 신공장 가동 후 <b>2029년 330만대</b>로 6.6배 확대 목표. 정밀가공 시설 350억 투자로 생산능력 10배 이상 확대 예정.</p>
+        </div>
+        <div class="pt-box warn" style="margin-top:12px;">
+          <div class="pt-tag">⚠️ 모니터링 포인트</div>
+          <p>2025년 <b>희토류 공급 부족으로 다이나믹셀 Y 출하 지연</b> 발생 (KB증권 2026.05). 모터는 여전히 외부 조달 — 모터 내재화 R&D에 120억 투자 중이나 결실까지 시간 소요. 중국·미국 수출규제 강화 시 매출 차질 가능성.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Worker -->
+    <div id="seg-aiw" class="seg-panel">
+      <div class="seg-header">
+        <div class="seg-icon-big">🤖</div>
+        <div class="seg-meta">
+          <div class="seg-badge">GROWTH ENGINE · 휴머노이드 신성장 동력</div>
+          <div class="seg-name-big">AI Worker + K-1 · AI Sapiens</div>
+          <div class="seg-sub">피지컬 AI 휴머노이드 라인업 · 양팔 작업형 + 이족보행</div>
+        </div>
+      </div>
+      <div class="seg-body">
+        <strong>AI Worker가 뭐예요?</strong> 상반신은 양팔 휴머노이드, 하반신은 바퀴 이동형 로봇이에요. 가장 큰 특징은 <b>피지컬 AI(Physical AI)</b> — 숙련 작업자가 '리더 암'을 잡고 동작을 시연하면, 로봇이 그걸 따라하면서 모방학습 + 강화학습으로 스스로 작업을 익혀요. 13년간 자체 휴머노이드 'THORMANG'을 만들어온 경험이 응축된 결과물입니다.<br><br>
+        <strong>2025년 본격 판매 개시:</strong> 김병수 대표 인터뷰(2025.10, 로봇신문) — "PoC는 이미 마쳤고, 납품 의뢰를 받았다." 마곡 본사에서 직접 생산. 우즈벡 가동 후 한국 대비 10배(1,000대) 생산 목표.
+        <div class="pt-box">
+          <div class="pt-tag">✅ 2025~2026 확인된 수요처 & 협력</div>
+          <p><b>물류 PoC:</b> CJ대한통운, BGF리테일, BGF로지스 (비정형 상품 분류·피킹·반품) · <b>글로벌 협업:</b> 오픈AI, 구글, MIT 산학협력 · <b>정부 과제:</b> 산업부 'AI 파운데이션 모델 휴머노이드' 주관(VLA 모델 내재화) · <b>LG전자 협력:</b> 스마트팩토리 자동화 공동 추진 · 보스턴다이내믹스 부품 공급</p>
+        </div>
+        <strong>2026 신제품 K-1 (이족보행 휴머노이드):</strong> 2026년 출시 예정. 키 130cm, 무게 30kg, 다이나믹셀 Q 23개 탑재. <b>가격 1,000만원대 중반</b> — 중국 유니트리 가격대 정조준. 보행 속도 1.5~2.0m/s. 한 발 서기·뛰기·춤추기 동적 동작 가능. 보행 알고리즘은 시뮬레이션 강화학습 → '심투리얼' 방식으로 현실 구현.
+        <div class="pt-box" style="margin-top:12px;">
+          <div class="pt-tag">신제품 라인업 확장 (2025~2026)</div>
+          <p><b>2025.01 HX5-D20 로봇 핸드</b> 발표 — 정밀 그립용 · <b>2026.04 AI Sapiens</b> 발표 — 범용 휴머노이드 · <b>2026 출시 K-1</b> — 저가형 이족보행 휴머노이드 · 중국 휴머노이드 시장 직접 타깃팅 + 서구권 양산 대응</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 데이터 팩토리 -->
+    <div id="seg-data" class="seg-panel">
+      <div class="seg-header">
+        <div class="seg-icon-big">📊</div>
+        <div class="seg-meta">
+          <div class="seg-badge">NEW BUSINESS · 미래 동력</div>
+          <div class="seg-name-big">데이터 팩토리 (액션 데이터 허브)</div>
+          <div class="seg-sub">우즈베키스탄 11만㎡ · 1,000명 규모 · 2026.10 가동</div>
+        </div>
+      </div>
+      <div class="seg-body">
+        <strong>왜 데이터 팩토리?</strong> 휴머노이드 로봇이 똑똑해지려면 <b>'액션 데이터'</b>가 필요해요. 사람의 손동작·자세를 영상이 아닌 '관절 각도 시계열'로 저장한 학습 데이터. 글로벌 빅테크(테슬라, 오픈AI, 구글)는 이 데이터가 절실하지만 직접 모으기엔 너무 비싸고 느려요. 로보티즈는 이 데이터를 <b>대량 생산해서 판매</b>하겠다는 전략입니다.<br><br>
+        <strong>왜 우즈베키스탄인가?</strong> 인건비가 중국 로봇 클러스터의 28% 수준. 정밀가공 기술력 우수. 부총리 직접 지원 약속(3.3만평 부지 + 세제 혜택). 정부 차원 전략사업으로 지정.
+        <div class="pt-box">
+          <div class="pt-tag">로드맵 — 액추에이터 + 데이터 동시 확장</div>
+          <p><b>2026.07 완공 / 10월 정식 가동</b>. 100명 → 2~3년 내 1,000명. 액추에이터 CAPA 2026년말 50만대 → <b>2029년 330만대</b>. 시설투자 600억 + 운영자금 400억 = 총 <b>1,000억원 투입</b> (2025.11 유상증자로 자금 확보 완료).</p>
+        </div>
+        <strong>경쟁 환경:</strong> 세계 출하 1위 휴머노이드 기업 <b>중국 애지봇(Agibot)</b> 데이터 팩토리를 능가한다는 목표. 다만 데이터 셀링 비즈니스 모델은 글로벌 빅테크의 실제 구매 의향이 검증되어야 — 신규 수익원으로서 불확실성 잔존.
+      </div>
+    </div>
+
+    <!-- 자율주행 (분할) -->
+    <div id="seg-mobile" class="seg-panel">
+      <div class="seg-header">
+        <div class="seg-icon-big">🚗</div>
+        <div class="seg-meta">
+          <div class="seg-badge">분할·자회사 이전</div>
+          <div class="seg-name-big">자율주행로봇 '개미'</div>
+          <div class="seg-sub">2025.06.01 물적분할로 (주)로보티즈AI로 이전</div>
+        </div>
+      </div>
+      <div class="seg-body">
+        <strong>분할 배경:</strong> 자율주행 사업은 누적 적자가 크고 별도 R&D가 필요한 분야였어요. 2025년 6월 1일 <b>물적분할</b>로 신설회사 (주)로보티즈AI로 분리. 김병수 대표가 양사 대표 겸직.<br><br>
+        <strong>사업 내용:</strong> 실내(호텔·오피스 배송) + 실외(라스트마일 배송) 자율주행 로봇 '개미'. 2023년 11월 지능형로봇법 개정으로 공도 주행 허용. 일본 오사카·도쿄 호텔 진출. 미국 글로벌 물류업체 협업. 라스트마일 비용 1.6달러 → 0.06달러로 대폭 절감 가능.
+        <div class="pt-box warn">
+          <div class="pt-tag">⚠️ 분할 후 본체 영향</div>
+          <p>분할로 적자 사업이 분리되면서 모회사 로보티즈의 영업이익이 빠르게 정상화. 단, 분할로 만들어진 자회사 로보티즈AI의 향후 자금 조달·실적은 별도로 관리되며, 모회사 재무에 미치는 영향(지분법 손익)은 지속 모니터링 필요. 2025년 자율주행 매출은 본체에서 11.1억원 (분할 전 5개월분).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 주요 거점 -->
+  <div class="section" style="animation-delay:0.17s;">
+    <div class="section-title">주요 거점 · 글로벌 네트워크</div>
+    <div style="background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.5);border-radius:16px;padding:20px 22px;backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,40,120,0.06);">
+      <!-- 국내 -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:#1a3a8a;margin-bottom:10px;">🇰🇷 국내 거점 (R&D 본사)</div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:rgba(30,80,200,0.06);border:1px solid rgba(30,80,200,0.15);border-radius:10px;">
+          <div style="font-size:24px;flex-shrink:0;">🏢</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:800;color:#1a2a4a;">서울 강서구 마곡 본사</div>
+            <div style="font-size:11px;color:#5a6a8a;margin-top:3px;line-height:1.65;">마곡중앙5로1길 37 (2018년 이전) · <b>R&D + 자체 생산 거점</b> · AI Worker 직접 제작 · 다이나믹셀 핵심 라인업 생산 · '노동으로부터의 자유' 사옥 1층 슬로건</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 해외 -->
+      <div>
+        <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:#1a3a8a;margin-bottom:10px;">🌎 해외 거점 (영업·생산)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px;">
+
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:rgba(255,255,255,0.6);border:1px solid rgba(0,40,120,0.10);border-radius:10px;">
+            <div style="font-size:20px;flex-shrink:0;">🇺🇸</div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:800;color:#1a2a4a;">미국 지사 (영업)</div>
+              <div style="font-size:10px;color:#5a6a8a;margin-top:2px;line-height:1.6;">ROBOTIS LLC · 캘리포니아 거점 · <b>매출 30% 비중 최대 시장</b> · 테슬라·구글·보스턴다이내믹스 직접 대응 · 스탠퍼드 학계 네트워크</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:rgba(255,255,255,0.6);border:1px solid rgba(0,40,120,0.10);border-radius:10px;">
+            <div style="font-size:20px;flex-shrink:0;">🇨🇳</div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:800;color:#1a2a4a;">중국 지사 (영업)</div>
+              <div style="font-size:10px;color:#5a6a8a;margin-top:2px;line-height:1.6;">ROBOTIS Beijing · 휴머노이드 수요 급증 시장 · 유니트리 등 휴머노이드 부품 대응 · "중국에서 못 이기면 결국 진다"(김병수 대표) — 3년 내 비중 확대 목표</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:rgba(255,255,255,0.6);border:1px solid rgba(0,40,120,0.10);border-radius:10px;">
+            <div style="font-size:20px;flex-shrink:0;">🇯🇵</div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:800;color:#1a2a4a;">일본 지점 (영업)</div>
+              <div style="font-size:10px;color:#5a6a8a;margin-top:2px;line-height:1.6;">ROBOTIS Japan · 오사카·나고야·도쿄 호텔 자율주행 로봇 실증 · 국내 로봇 최초 일본 로봇 도입 보조금 지원 대상 선정</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:11px 13px;background:rgba(180,100,20,0.08);border:1.5px solid rgba(180,100,20,0.30);border-radius:10px;">
+            <div style="font-size:20px;flex-shrink:0;">🇺🇿</div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:800;color:#7a4a00;">우즈베키스탄 신공장 <span style="font-size:9px;background:#c07020;color:white;padding:2px 6px;border-radius:6px;margin-left:3px;">건설중</span></div>
+              <div style="font-size:10px;color:#7a5a30;margin-top:2px;line-height:1.6;">타슈켄트 · <b>11만㎡(3.3만평) · 1,000명 규모</b> · 2026.07 완공/10월 정식 가동 · 정밀가공·모터생산·데이터팩토리·휴머노이드 양산 통합 거점 · 부총리 직접 지원 (국가 전략사업 지정) · 인건비 중국 대비 28% 수준 · 1,000억 투자</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 자회사 -->
+      <div style="margin-top:16px;padding-top:14px;border-top:1px dashed rgba(0,40,120,0.10);">
+        <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:#1a3a8a;margin-bottom:10px;">🏢 연결대상 종속회사 (3개)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="background:rgba(22,134,74,0.08);color:#0a5a30;padding:6px 12px;border-radius:18px;font-size:11px;font-weight:700;border:1px solid rgba(22,134,74,0.18);">㈜로보티즈AI <span style="font-weight:500;">· 2025.06.01 신설 · 자율주행 사업</span></div>
+          <div style="background:rgba(30,80,200,0.06);color:#1a3a8a;padding:6px 12px;border-radius:18px;font-size:11px;font-weight:700;border:1px solid rgba(30,80,200,0.18);">ROBOTIS USA <span style="font-weight:500;">· 영업 자회사</span></div>
+          <div style="background:rgba(30,80,200,0.06);color:#1a3a8a;padding:6px 12px;border-radius:18px;font-size:11px;font-weight:700;border:1px solid rgba(30,80,200,0.18);">ROBOTIS China <span style="font-weight:500;">· 영업 자회사</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 재무 현황 -->
+  <div class="section" style="animation-delay:0.18s;">
+    <div class="section-title">재무 현황 (DART 27기 사업보고서 기반)</div>
+
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+      <button id="ft-btn-annual"  onclick="switchFT('annual')"
+        style="padding:8px 22px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #2050c0;background:rgba(30,80,200,0.10);color:#1a3a8a;font-family:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent;position:relative;z-index:2;">연간</button>
+      <button id="ft-btn-quarter" onclick="switchFT('quarter')"
+        style="padding:8px 22px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid rgba(30,80,200,0.25);background:rgba(255,255,255,0.5);color:#4a5a8a;font-family:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent;position:relative;z-index:2;">분기</button>
+      <button id="ft-btn-balance" onclick="switchFT('balance')"
+        style="padding:8px 22px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid rgba(30,80,200,0.25);background:rgba(255,255,255,0.5);color:#4a5a8a;font-family:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent;position:relative;z-index:2;">재무상태</button>
+    </div>
+
+    <!-- 연간 -->
+    <div id="ft-annual" style="display:block;">
+      <div style="background:rgba(255,255,255,0.88);border:1px solid rgba(200,215,240,0.7);border-radius:16px;overflow:hidden;box-shadow:0 2px 14px rgba(0,30,100,0.06);">
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:380px;">
+            <thead>
+              <tr style="background:rgba(240,245,255,0.9);">
+                <th style="text-align:left;padding:11px 14px;font-size:11px;font-weight:700;color:#6a7a9a;letter-spacing:0.5px;border-bottom:1.5px solid rgba(200,215,240,0.8);min-width:90px;">항목</th>
+                <th style="text-align:right;padding:11px 10px;font-size:11px;font-weight:700;color:#8a9ab0;border-bottom:1.5px solid rgba(200,215,240,0.8);">2023</th>
+                <th style="text-align:right;padding:11px 10px;font-size:11px;font-weight:700;color:#8a9ab0;border-bottom:1.5px solid rgba(200,215,240,0.8);">2024</th>
+                <th style="text-align:right;padding:11px 10px;font-size:11px;font-weight:700;color:#1a6a30;background:rgba(220,245,230,0.6);border-bottom:1.5px solid rgba(22,134,74,0.25);">2025 ★</th>
+                <th style="text-align:right;padding:11px 10px;font-size:11px;font-weight:700;color:#1a50b0;background:rgba(220,235,255,0.5);border-bottom:1.5px solid rgba(30,80,200,0.20);">2026E ⓔ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">매출액<br><span style="font-size:10px;font-weight:400;color:#9aabb0;">(억원)</span></td>
+                <td style="text-align:right;padding:10px 10px;color:#4a5a7a;">291</td>
+                <td style="text-align:right;padding:10px 10px;color:#4a5a7a;">300</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">389</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:700;color:#1a50b0;background:rgba(220,235,255,0.3);">644</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">YoY 성장률</td>
+                <td style="text-align:right;padding:10px 10px;color:#8a9ab0;">—</td>
+                <td style="text-align:right;padding:10px 10px;color:#16864a;font-weight:700;">+3.1%</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:800;color:#16864a;background:rgba(220,245,230,0.35);">+29.6%</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:700;color:#16864a;background:rgba(220,235,255,0.3);">+65.4%</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">영업이익<br><span style="font-size:10px;font-weight:400;color:#9aabb0;">(억원)</span></td>
+                <td style="text-align:right;padding:10px 10px;color:#c03030;font-weight:700;">-53</td>
+                <td style="text-align:right;padding:10px 10px;color:#c03030;font-weight:700;">-30</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">+33 ✓</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:700;color:#16864a;background:rgba(220,235,255,0.3);">+96</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);background:rgba(245,248,255,0.5);">
+                <td style="padding:10px 14px;font-weight:800;color:#1a2a4a;font-size:12px;">OPM (%)</td>
+                <td style="text-align:right;padding:10px 10px;color:#c03030;font-weight:700;">-18.2%</td>
+                <td style="text-align:right;padding:10px 10px;color:#c03030;font-weight:700;">-9.9%</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">+8.6%</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:800;color:#16864a;background:rgba(220,235,255,0.3);">+14.9%</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">당기순이익<br><span style="font-size:10px;font-weight:400;color:#9aabb0;">(억원)</span></td>
+                <td style="text-align:right;padding:10px 10px;color:#c03030;font-weight:700;">-13</td>
+                <td style="text-align:right;padding:10px 10px;color:#c03030;font-weight:700;">-30</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">+53 ✓</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:700;color:#16864a;background:rgba(220,235,255,0.3);">+109</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">EPS (원)</td>
+                <td style="text-align:right;padding:10px 10px;color:#c03030;font-weight:700;">-110</td>
+                <td style="text-align:right;padding:10px 10px;color:#c03030;font-weight:700;">-244</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">377</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:700;color:#1a50b0;background:rgba(220,235,255,0.3);">774</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">PER (배)</td>
+                <td style="text-align:right;padding:10px 10px;color:#8a9ab0;">—</td>
+                <td style="text-align:right;padding:10px 10px;color:#8a9ab0;">—</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:700;color:#b06010;background:rgba(220,245,230,0.35);">691.8</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:700;color:#b06010;background:rgba(220,235,255,0.3);">445.9</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">BPS (원)</td>
+                <td style="text-align:right;padding:10px 10px;color:#4a5a7a;">7,481</td>
+                <td style="text-align:right;padding:10px 10px;color:#4a5a7a;">7,362</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:800;color:#4a5a7a;background:rgba(220,245,230,0.35);">21,707</td>
+                <td style="text-align:right;padding:10px 10px;font-weight:700;color:#4a5a7a;background:rgba(220,235,255,0.3);">21,967</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;font-size:10.5px;color:#8a9ab0;line-height:1.7;border-top:1px solid rgba(200,215,240,0.5);">
+          ★ 2025 = DART 27기 사업보고서 확정 (2026.03.16) · ⓔ 2026E = 네이버 증권 컨센서스 · 연결 기준 · 단위: 억원, %, 원<br>
+          📈 2025년 BPS가 7,362 → 21,707로 급증한 것은 <b>2025.11 유상증자 2,098억원</b>(발행가 155,500원) 효과 반영 (보통주 1,349,528주 신주 발행)
+        </div>
+      </div>
+    </div>
+
+    <!-- 분기 -->
+    <div id="ft-quarter" style="display:none;">
+      <div style="background:rgba(255,255,255,0.88);border:1px solid rgba(200,215,240,0.7);border-radius:16px;overflow:hidden;box-shadow:0 2px 14px rgba(0,30,100,0.06);">
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:520px;">
+            <thead>
+              <tr style="background:rgba(240,245,255,0.9);">
+                <th style="text-align:left;padding:10px 12px;font-size:10px;font-weight:700;color:#6a7a9a;border-bottom:1.5px solid rgba(200,215,240,0.8);min-width:80px;">항목</th>
+                <th style="text-align:right;padding:10px 8px;font-size:10px;font-weight:700;color:#8a9ab0;border-bottom:1.5px solid rgba(200,215,240,0.8);">24.4Q</th>
+                <th style="text-align:right;padding:10px 8px;font-size:10px;font-weight:700;color:#8a9ab0;border-bottom:1.5px solid rgba(200,215,240,0.8);">25.1Q</th>
+                <th style="text-align:right;padding:10px 8px;font-size:10px;font-weight:700;color:#8a9ab0;border-bottom:1.5px solid rgba(200,215,240,0.8);">25.2Q</th>
+                <th style="text-align:right;padding:10px 8px;font-size:10px;font-weight:700;color:#8a9ab0;border-bottom:1.5px solid rgba(200,215,240,0.8);">25.3Q</th>
+                <th style="text-align:right;padding:10px 8px;font-size:10px;font-weight:700;color:#1a6a30;background:rgba(220,245,230,0.6);border-bottom:1.5px solid rgba(22,134,74,0.25);">25.4Q ★</th>
+                <th style="text-align:right;padding:10px 8px;font-size:10px;font-weight:700;color:#1a50b0;background:rgba(220,235,255,0.5);border-bottom:1.5px solid rgba(30,80,200,0.20);">26.1Q ⓔ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:9px 12px;font-weight:700;color:#2a3a5a;font-size:11px;">매출액 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:9px 8px;color:#4a5a7a;">68</td>
+                <td style="text-align:right;padding:9px 8px;color:#4a5a7a;">102</td>
+                <td style="text-align:right;padding:9px 8px;color:#4a5a7a;">79</td>
+                <td style="text-align:right;padding:9px 8px;color:#4a5a7a;">92</td>
+                <td style="text-align:right;padding:9px 8px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">116</td>
+                <td style="text-align:right;padding:9px 8px;font-weight:700;color:#1a50b0;background:rgba(220,235,255,0.3);">138</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:9px 12px;font-weight:700;color:#2a3a5a;font-size:11px;">영업이익 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:9px 8px;color:#c03030;font-weight:700;">-7</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">8</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">2</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">2</td>
+                <td style="text-align:right;padding:9px 8px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">21</td>
+                <td style="text-align:right;padding:9px 8px;font-weight:700;color:#16864a;background:rgba(220,235,255,0.3);">21</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);background:rgba(245,248,255,0.5);">
+                <td style="padding:9px 12px;font-weight:800;color:#1a2a4a;font-size:11px;">OPM (%)</td>
+                <td style="text-align:right;padding:9px 8px;color:#c03030;font-weight:700;">-10.8</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">8.1</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">3.1</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">2.4</td>
+                <td style="text-align:right;padding:9px 8px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">17.7</td>
+                <td style="text-align:right;padding:9px 8px;font-weight:800;color:#16864a;background:rgba(220,235,255,0.3);">15.2</td>
+              </tr>
+              <tr>
+                <td style="padding:9px 12px;font-weight:700;color:#2a3a5a;font-size:11px;">당기순이익 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">15</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">12</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">2</td>
+                <td style="text-align:right;padding:9px 8px;color:#16864a;font-weight:700;">9</td>
+                <td style="text-align:right;padding:9px 8px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">30</td>
+                <td style="text-align:right;padding:9px 8px;font-weight:700;color:#1a50b0;background:rgba(220,235,255,0.3);">20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;font-size:10.5px;color:#8a9ab0;line-height:1.7;border-top:1px solid rgba(200,215,240,0.5);">
+          📊 분기 추이 핵심: <b>매출은 분기별 79~116억으로 변동 있으나 4Q25에 116억 최대치 달성</b> · OPM은 <b>4Q25에 17.7%로 점프</b> (연중 최고 분기) — 우즈벡 가동 전부터 본격 수익성 개선 시작.<br>
+          ※ 2025 분기 합산 = 389억(매출) / 33억(OP) / 53억(NP) — DART 연간 확정치와 일치 검증됨 · 26.1Q ⓔ는 네이버 컨센서스
+        </div>
+      </div>
+    </div>
+
+    <!-- 재무상태표 -->
+    <div id="ft-balance" style="display:none;">
+      <div style="background:rgba(255,255,255,0.88);border:1px solid rgba(200,215,240,0.7);border-radius:16px;overflow:hidden;box-shadow:0 2px 14px rgba(0,30,100,0.06);">
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:340px;">
+            <thead>
+              <tr style="background:rgba(240,245,255,0.9);">
+                <th style="text-align:left;padding:11px 14px;font-size:11px;font-weight:700;color:#6a7a9a;border-bottom:1.5px solid rgba(200,215,240,0.8);">항목</th>
+                <th style="text-align:right;padding:11px 12px;font-size:11px;font-weight:700;color:#8a9ab0;border-bottom:1.5px solid rgba(200,215,240,0.8);">2023</th>
+                <th style="text-align:right;padding:11px 12px;font-size:11px;font-weight:700;color:#8a9ab0;border-bottom:1.5px solid rgba(200,215,240,0.8);">2024</th>
+                <th style="text-align:right;padding:11px 12px;font-size:11px;font-weight:700;color:#1a6a30;background:rgba(220,245,230,0.6);border-bottom:1.5px solid rgba(22,134,74,0.25);">2025 ★</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">자산총계 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;">1,150</td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;">1,002</td>
+                <td style="text-align:right;padding:10px 12px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">3,197</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:600;color:#5a6a8a;font-size:11px;">└ 현금성자산 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;font-size:12px;">561</td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;font-size:12px;">376</td>
+                <td style="text-align:right;padding:10px 12px;color:#1a6a30;font-weight:700;background:rgba(220,245,230,0.35);font-size:12px;">1,968</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:600;color:#5a6a8a;font-size:11px;">└ 재고자산 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;font-size:12px;">154</td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;font-size:12px;">134</td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;background:rgba(220,245,230,0.35);font-size:12px;">136</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">부채총계 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:10px 12px;color:#c07020;font-weight:700;">192</td>
+                <td style="text-align:right;padding:10px 12px;color:#16864a;font-weight:700;">42</td>
+                <td style="text-align:right;padding:10px 12px;font-weight:800;color:#16864a;background:rgba(220,245,230,0.35);">56</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);background:rgba(245,248,255,0.5);">
+                <td style="padding:10px 14px;font-weight:800;color:#1a2a4a;font-size:12px;">부채비율 (%)</td>
+                <td style="text-align:right;padding:10px 12px;color:#c07020;font-weight:700;">20.0%</td>
+                <td style="text-align:right;padding:10px 12px;color:#16864a;font-weight:700;">4.4%</td>
+                <td style="text-align:right;padding:10px 12px;font-weight:800;color:#16864a;background:rgba(220,245,230,0.35);">1.8%</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:700;color:#2a3a5a;font-size:12px;">자본총계 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;">958</td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;">960</td>
+                <td style="text-align:right;padding:10px 12px;font-weight:800;color:#1a6a30;background:rgba(220,245,230,0.35);">3,141</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(200,215,240,0.45);">
+                <td style="padding:10px 14px;font-weight:600;color:#5a6a8a;font-size:11px;">└ 자본금 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;font-size:12px;">64.4</td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;font-size:12px;">65.7</td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;background:rgba(220,245,230,0.35);font-size:12px;">73.2</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 14px;font-weight:600;color:#5a6a8a;font-size:11px;">└ 자본잉여금 <small style="color:#9aabb0;">(억)</small></td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;font-size:12px;">749</td>
+                <td style="text-align:right;padding:10px 12px;color:#4a5a7a;font-size:12px;">797</td>
+                <td style="text-align:right;padding:10px 12px;color:#1a6a30;font-weight:700;background:rgba(220,245,230,0.35);font-size:12px;">2,904</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;font-size:10.5px;color:#8a9ab0;line-height:1.7;border-top:1px solid rgba(200,215,240,0.5);">
+          ★ 2025년 자산 1,002억 → 3,197억 급증은 <b>2025.11 유상증자(2,098억)</b>로 인한 자본잉여금 증가가 주요인 · 부채비율 1.8%로 사실상 무차입 경영 수준 · 우즈베키스탄 1,000억 투자 자금 확보 완료
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 증권사 리포트 -->
+  <div class="section" style="animation-delay:0.22s;">
+    <div class="section-title">📊 증권사 리포트 (최근 3건)</div>
+    <div style="background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.4);border-radius:14px;padding:20px;backdrop-filter:blur(6px);">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- KB증권 -->
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,40,120,0.05);">
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+            <span style="font-size:10px;font-weight:700;color:white;background:#1a6a30;padding:3px 8px;border-radius:6px;text-align:center;">최신</span>
+            <span style="font-size:10px;font-weight:700;color:white;background:#2a8a50;padding:3px 8px;border-radius:6px;text-align:center;">긍정</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:6px;">
+              <span style="font-size:13px;color:#2a3a5a;font-weight:600;">KB증권 김선봉 — "중·서구권 휴머노이드 전방위 대응"</span>
+              <span style="font-size:11px;color:#8a9aaa;white-space:nowrap;flex-shrink:0;">2026.05.12</span>
+            </div>
+            <div style="font-size:12px;color:#3a5a8a;margin-top:4px;line-height:1.75;">"액추에이터·감속기 부품부터 완제품까지 전제품 생산 기술력 보유, 중국부터 서구권까지 전방위 대응 가능" · 2025년 매출 389억(+29.6%) 흑전 평가 · 우즈베키스탄 인건비 중국 28% 수준 · CAPA 2026 50만대 → 2029 330만대 확대 평가 · 단, <b>목표주가·투자의견 미제시</b> (희토류·모터 외부조달 리스크 지적)</div>
+          </div>
+        </div>
+
+        <!-- 삼성증권 -->
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,40,120,0.05);">
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+            <span style="font-size:10px;font-weight:700;color:white;background:#2a6aaa;padding:3px 8px;border-radius:6px;text-align:center;">커버</span>
+            <span style="font-size:10px;font-weight:700;color:white;background:#2a6aaa;padding:3px 8px;border-radius:6px;text-align:center;">개시</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:6px;">
+              <span style="font-size:13px;color:#2a3a5a;font-weight:600;">삼성증권 — Top-pick · BUY 의견 / 목표주가 <b style="color:#1a6a30;">320,000원</b></span>
+              <span style="font-size:11px;color:#8a9aaa;white-space:nowrap;flex-shrink:0;">2026.03.10</span>
+            </div>
+            <div style="font-size:12px;color:#3a5a8a;margin-top:4px;line-height:1.75;">"글로벌 레퍼런스를 확보한 액추에이터 전문 기업" 커버리지 개시 · <b>BUY·목표주가 320,000원</b> 제시 (현재가 313,500원 대비 +2%) · 우즈베키스탄 데이터팩토리에 주목 — 빅테크 타깃 로봇 행동 데이터 수집·판매 비즈니스 모델 · "직접 AI 개발하지 않더라도 하드웨어를 글로벌 표준으로 각인 가능"</div>
+          </div>
+        </div>
+
+        <!-- 메리츠증권 -->
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;">
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+            <span style="font-size:10px;font-weight:700;color:white;background:#8a6aaa;padding:3px 8px;border-radius:6px;text-align:center;">참고</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:6px;">
+              <span style="font-size:13px;color:#2a3a5a;font-weight:600;">메리츠증권 이지호·김아현 — AI Worker 양산 본격화 관점</span>
+              <span style="font-size:11px;color:#8a9aaa;white-space:nowrap;flex-shrink:0;">2026.01.29</span>
+            </div>
+            <div style="font-size:12px;color:#3a5a8a;margin-top:4px;line-height:1.75;">한경 컨센서스 자료 출처 · 2026년 액추에이터 본격 매출 확대 + AI Worker 휴머노이드 판매 본격화 평가 · 데이터 팩토리 사업의 추가 수익 모델로 인식 · 휴머노이드 시장의 한국 대표 기업으로 자리매김 전망</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:14px;padding:12px 14px;background:rgba(30,80,200,0.06);border-radius:10px;border:1px solid rgba(30,80,200,0.16);">
+        <div style="font-size:11px;color:#1a3a8a;font-weight:700;">📌 컨센서스 종합</div>
+        <div style="font-size:12px;color:#2a3a6a;margin-top:4px;line-height:1.7;">12개월 평균 목표주가 <b>316,667원</b> (최고 360,000 / 최저 270,000) · <b>3명 매수 / 0명 매도</b> · "적극매수" 등급 · 다만 KB증권은 의견 유보. 대부분 리포트가 우즈벡 가동(2026.10) 이후 본격 실적 가시화에 베팅 — 가동 지연 시 컨센 하향 가능성.</div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="https://markets.hankyung.com/stock/108490/consensus" target="_blank" style="font-size:11px;color:#1a4ab0;font-weight:600;text-decoration:none;background:rgba(30,80,200,0.06);padding:5px 12px;border-radius:8px;border:1px solid rgba(30,80,200,0.12);">한경 컨센서스 ↗</a>
+        <a href="https://dart.fss.or.kr/dsab001/search.ax?textCrpNm=로보티즈" target="_blank" style="font-size:11px;color:#1a4ab0;font-weight:600;text-decoration:none;background:rgba(30,80,200,0.06);padding:5px 12px;border-radius:8px;border:1px solid rgba(30,80,200,0.12);">DART 공시 ↗</a>
+        <a href="https://finance.naver.com/item/main.naver?code=108490" target="_blank" style="font-size:11px;color:#1a4ab0;font-weight:600;text-decoration:none;background:rgba(30,80,200,0.06);padding:5px 12px;border-radius:8px;border:1px solid rgba(30,80,200,0.12);">네이버 금융 ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 함께 볼 관련 기업 -->
+  <div class="section" style="animation-delay:0.26s;">
+    <div class="section-title">함께 볼 관련 기업</div>
+    <div class="related">
+      <a class="rel-chip" href="https://finance.naver.com/item/main.naver?code=066570" target="_blank">📺 LG전자 — 지분 6.67% 보유 + 스마트팩토리 협력</a>
+      <a class="rel-chip" href="company_sbb_tech.html">🔧 에스비비테크 — 국내 감속기 경쟁/협력</a>
+      <a class="rel-chip" href="https://finance.naver.com/item/main.naver?code=277810" target="_blank">🤝 레인보우로보틱스 — 국내 휴머노이드 경쟁</a>
+      <a class="rel-chip" href="https://finance.naver.com/item/main.naver?code=454910" target="_blank">🦾 두산로보틱스 — 협동로봇 경쟁</a>
+      <a class="rel-chip" href="https://www.google.com/finance/quote/6920:TYO" target="_blank">🇯🇵 하모닉드라이브(HDS) — 글로벌 감속기 1위</a>
+    </div>
+  </div>
+
+  <!-- 외부 링크 -->
+  <div class="section" style="animation-delay:0.30s;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <a class="link-btn" href="https://finance.naver.com/item/main.naver?code=108490" target="_blank">📈 네이버 금융 →</a>
+      <a class="link-btn" href="https://dart.fss.or.kr/dsab001/search.ax?textCrpNm=로보티즈" target="_blank">📋 DART 공시 →</a>
+      <a class="link-btn" href="http://www.robotis.com" target="_blank">🏠 로보티즈 홈페이지 →</a>
+      <a class="link-btn" href="https://comp.fnguide.com/SVO2/ASP/SVD_Main.asp?gicode=A108490" target="_blank">📊 FnGuide 기업정보 →</a>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    🤖 로보티즈 · 산업 탐사도 · 페이지 작성 2026.05.13 · 주가 355,500원 기준<br>
+    본 페이지는 투자 권유가 아닙니다 · DART 27기 사업보고서(2026.03.16 공시) · 네이버 증권 (연간/분기 컨센서스) · KB/삼성/메리츠 증권 리포트 · 한국경제 · 아시아경제 · 로봇신문 · 문화일보 · ZDNet 기반<br>
+    52주 변동폭 33,950~364,000원 (10.7배) — 변동성 극단적 · 수치는 참고용
+  </div>
+
+</div>
+
+<script>
+function switchFT(tab) {
+  document.getElementById('ft-annual').style.display  = tab === 'annual'  ? 'block' : 'none';
+  document.getElementById('ft-quarter').style.display = tab === 'quarter' ? 'block' : 'none';
+  document.getElementById('ft-balance').style.display = tab === 'balance' ? 'block' : 'none';
+  ['annual','quarter','balance'].forEach(t => {
+    const b = document.getElementById('ft-btn-' + t);
+    if (t === tab) {
+      b.style.background = 'rgba(30,80,200,0.10)';
+      b.style.border     = '1.5px solid #2050c0';
+      b.style.color      = '#1a3a8a';
+    } else {
+      b.style.background = 'rgba(255,255,255,0.5)';
+      b.style.border     = '1.5px solid rgba(30,80,200,0.25)';
+      b.style.color      = '#4a5a8a';
+    }
+  });
+}
+
+function showSeg(id) {
+  document.querySelectorAll('.seg-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.seg-panel').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  const panel = document.getElementById('seg-' + id);
+  if (panel) {
+    panel.classList.add('active');
+    panel.style.display = 'block';
+  }
+  const activeTab = document.querySelector('.seg-tab[data-seg="' + id + '"]');
+  if (activeTab) activeTab.classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Segment tabs — robust touch handling
+  document.querySelectorAll('.seg-tab').forEach(function(tab) {
+    tab.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var seg = tab.getAttribute('data-seg');
+      if (seg) showSeg(seg);
+    }, {passive: false});
+    tab.addEventListener('click', function(e) {
+      var seg = tab.getAttribute('data-seg');
+      if (seg) showSeg(seg);
+    });
+  });
+
+  // Financial tabs — robust touch handling
+  ['annual', 'quarter', 'balance'].forEach(function(tab) {
+    var btn = document.getElementById('ft-btn-' + tab);
+    if (btn) {
+      btn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        switchFT(tab);
+      }, {passive: false});
+    }
+  });
+});
+</script>
+</body>
+</html>
